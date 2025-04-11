@@ -61,7 +61,8 @@ class AuthenticationService {
         const tokens = await createTokenPair({ userId, phone }, keyStore.publicKey, keyStore.privateKey);
         await keyStore.updateOne({
             $set: {
-                refreshToken: tokens.refreshToken
+                refreshToken: tokens.refreshToken,
+                accessToken: tokens.accessToken
             },
             $addToSet: {
                 refreshTokenUsed: refreshToken
@@ -81,31 +82,43 @@ class AuthenticationService {
         if (!foundUser) throw new BadRequestError('User not found!');
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) throw new AuthFailureError('Unauthorized!');
-        const { publicKey, privateKey } = genSecretKey();
-        const tokens = await createTokenPair({
-            userId: foundUser._id,
-            phone: foundUser.phone
-        }, publicKey, privateKey);
-        await KeyTokenService.createKeyToken({
-            userId: foundUser._id,
-            publicKey,
-            privateKey,
-            refreshToken: tokens.refreshToken
-        })
+        const keyStore = await KeyTokenService.findByUserId(foundUser._id);
+        if (!keyStore) {
+            const { publicKey, privateKey } = genSecretKey();
+            const tokens = await createTokenPair({
+                userId: foundUser._id,
+                phone: foundUser.phone
+            }, publicKey, privateKey);
+            await KeyTokenService.createKeyToken({
+                userId: foundUser._id,
+                publicKey,
+                privateKey,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken
+            })
+            return {
+                user: getInfoData({ fields: ['full_name', 'phone', 'is_has_password', '_id'], object: foundUser }),
+                tokens 
+            }
+        }
+
         return {
             user: getInfoData({ fields: ['full_name', 'phone', 'is_has_password', '_id'], object: foundUser }),
-            tokens
+            tokens : {
+                accessToken: keyStore.accessToken,
+                refreshToken: keyStore.refreshToken
+            }
         }
     }
 
-    static introspectToken = async({keyStore, User}) => {
-       if(!keyStore || !User) throw new AuthFailureError("Invalid request");
-       return {
+    static introspectToken = async ({ keyStore, User }) => {
+        if (!keyStore || !User) throw new AuthFailureError("Invalid request");
+        return {
             is_valid: true,
-       }
+        }
     }
 
-    
+
 }
 
 

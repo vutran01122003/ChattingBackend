@@ -2,10 +2,10 @@ const keytokenModel = require("../models/keytoken.model");
 const {Types} = require('mongoose');
 const {convertToObjectId} = require('../utils')
 class KeyTokenService {
-    static createKeyToken = async ({ userId, publicKey, privateKey, refreshToken }) => {
+    static createKeyToken = async ({ userId, publicKey, privateKey, accessToken, refreshToken }) => {
         try {
             const filter = {user: userId}, update = 
-            {publicKey, privateKey, refreshTokenUsed: [], refreshToken},
+            {publicKey, privateKey, refreshTokenUsed: [], accessToken ,refreshToken},
             options = {upsert: true, new: true}
             const tokens = await keytokenModel.findOneAndUpdate(filter, update, options)
             return tokens ? tokens.publicKey : null;  

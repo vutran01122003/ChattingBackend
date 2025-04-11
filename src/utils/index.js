@@ -73,5 +73,5 @@ module.exports = {
     getInfoData,
     sendSingleMessage,
     genSecretKey,
-    convertToObjectId
+    convertToObjectId,
 }

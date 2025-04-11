@@ -30,7 +30,7 @@ class AuthController {
             metadata: await AuthenticationService.logOut(req.keyStore)
         }).send(res)
     }
-    logIn = async(req, res, next) =>{
+    logIn = async (req, res, next) => {
         new SuccessResponse({
             message: "Login successfully",
             metadata: await AuthenticationService.login(req.body)
@@ -39,7 +39,7 @@ class AuthController {
     introspectToken = async (req, res, next) => {
         new SuccessResponse({
             message: 'Introspect token successfully',
-            metadata: await AuthenticationService.introspectToken({keyStore: req.keyStore, User: req.User})
+            metadata: await AuthenticationService.introspectToken({ keyStore: req.keyStore, User: req.User })
         }).send(res)
     }
 }

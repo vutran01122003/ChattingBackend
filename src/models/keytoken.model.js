@@ -22,6 +22,10 @@ var keyTokenSchema = new Schema({
         type: Array,
         default : []
     },
+    accessToken:{
+        type: String,
+        required: true
+    },
     refreshToken:{
         type: String,
         required: true
