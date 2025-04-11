@@ -1,0 +1,40 @@
+@url_dev=http://localhost:3055/v1/api
+
+POST {{url_dev}}/auth/signup
+Content-Type: application/json
+
+{
+    "phone":"0362594471"
+}
+
+### Login
+POST {{url_dev}}/auth/login
+Content-Type: application/json
+
+{
+    "phone":"0362594471",
+    "password":"John123"
+}
+
+### Verify OTP
+POST {{url_dev}}/auth/verify-otp
+Content-Type: application/json
+
+{
+    "otp":"847481",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJvdHAiOiI4NDc0ODEiLCJpYXQiOjE3NDQxNzc3NDAsImV4cCI6MTc0NDE3NzgwMH0.bYlglcaUBUUQlzxi0D02u2WuM0gJWb9mMvRDiJgok4M"
+}
+
+### Refresh Token
+POST {{url_dev}}/auth/refresh-token
+Content-Type: application/json
+x-client-id:67f6b738898cd08cf81e3f2c
+refresh-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyMjIwMDgsImV4cCI6MTc0NDgyNjgwOH0.KPyZV56izf488j6DF6VlgM31tQoC3We57z7fzL9VUUQ
+
+
+### logout
+POST {{url_dev}}/auth/logout
+Content-Type: application/json
+x-client-id:67f6b738898cd08cf81e3f2c
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyNTYzNzgsImV4cCI6MTc0NDQyOTE3OH0.UK3yAkN8hU8QNFtpcHHoZ_rWX_SXHWwairItgbi5HSM
+

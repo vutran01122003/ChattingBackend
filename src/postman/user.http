@@ -1,0 +1,38 @@
+@url_dev=http://localhost:3055/v1/api
+
+POST {{url_dev}}/user/update-info
+Content-Type: application/json
+x-client-id:67f60a6e97b4c55c5263e5ef
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2MGE2ZTk3YjRjNTVjNTI2M2U1ZWYiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQxNzc3NzQsImV4cCI6MTc0NDM1MDU3NH0.yndnmrt89HBqBnPVE9hgDHAW33s15tt23R8sdo_MQqc
+
+{
+    "fullName": "John Doe",
+    "dateOfBirth":"2003-07-22",
+    "gender": "male"
+}
+### get user info
+GET {{url_dev}}/user/info
+Content-Type: application/json
+x-client-id:67f6b738898cd08cf81e3f2c
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyNDY1MjIsImV4cCI6MTc0NDQxOTMyMn0.UV0k19MACILffKlb4oQp_FBNgTgUsZQ529G6WSQVacs
+
+### create password
+POST {{url_dev}}/user/create-password
+Content-Type: application/json
+x-client-id:67f6b738898cd08cf81e3f2c
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyNDY1MjIsImV4cCI6MTc0NDQxOTMyMn0.UV0k19MACILffKlb4oQp_FBNgTgUsZQ529G6WSQVacs
+
+{
+    "password": "john123"
+}
+
+### change password
+POST {{url_dev}}/user/change-password
+Content-Type: application/json
+x-client-id:67f4cd1324cc59f41ff7d212
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y0Y2QxMzI0Y2M1OWY0MWZmN2QyMTIiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQxMzEyMzEsImV4cCI6MTc0NDMwNDAzMX0.6oeuKkHN9lAN33e788FUzd1urMzXziIyJkw6totcaXw
+
+{
+    "password": "john1234",
+    "newPassword": "john123"
+}
