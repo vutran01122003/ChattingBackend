@@ -1,6 +1,8 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const {Types} = require('mongoose')
+const {v4: uuidv4} = require('uuid')
+const redis = require('../configs/config.redis')
 const _ = require('lodash')
 require('dotenv').config()
 const SERVER = 'https://admin.freesms.vn';
@@ -67,6 +69,22 @@ const genSecretKey = () =>{
 const convertToObjectId= id => {
     return new Types.ObjectId(id);
 }
+const generateQRSession = async () =>{
+    const sessionId = uuidv4();
+    const sessionData = {
+        status: 'pending',
+        createdAt: Date.now(),
+    };
+    try {
+        await redis.set(`qr_login:${sessionId}`, JSON.stringify(sessionData), {
+            "EX": 180
+        })
+    } catch (error) {
+        console.error('Error setting QR session in Redis:', error);
+    }
+    return sessionId;
+}
+
 module.exports = {
     getSelectData,
     unGetSelectData,
@@ -74,4 +92,5 @@ module.exports = {
     sendSingleMessage,
     genSecretKey,
     convertToObjectId,
+    generateQRSession
 }

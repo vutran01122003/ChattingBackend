@@ -42,6 +42,30 @@ class AuthController {
             metadata: await AuthenticationService.introspectToken({ keyStore: req.keyStore, User: req.User })
         }).send(res)
     }
+    generateQR = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Generate QR code successfully',
+            metadata: await AuthenticationService.generateQRSession()
+        }).send(res)
+    }
+    approveQRLogin = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Approve QR login successfully',
+            metadata: await AuthenticationService.approveQRLogin({
+                userId: req.User.userId,
+                sessionId: req.body.sessionId, accessToken: req.body.accessToken, refreshToken: req.body.refreshToken
+            })
+        }).send(res);
+    }
+    checkQRLogin = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Check QR login successfully',
+            metadata: await AuthenticationService.checkQRSession({
+                sessionId: req.query.sessionId
+            })
+        }).send(res);
+    }
+
 }
 
 module.exports = new AuthController()

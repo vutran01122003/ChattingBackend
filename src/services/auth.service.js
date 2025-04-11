@@ -1,10 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const redis = require('../configs/config.redis')
 const { findUserByPhoneNumber, createAccount } = require('../models/repositories/user.repo');
 const { BadRequestError, AuthFailureError, ForbiddenError } = require('../core/error.response')
-const { sendSingleMessage, genSecretKey, getInfoData } = require('../utils')
+const { sendSingleMessage, genSecretKey, getInfoData, generateQRSession } = require('../utils')
 const { generateOTPToken, verifyOTP } = require('../auth/genOTP');
 const { createTokenPair } = require('../auth/authUtils')
+
 const KeyTokenService = require('./keytoken.service');
 class AuthenticationService {
 
@@ -117,6 +119,47 @@ class AuthenticationService {
             is_valid: true,
         }
     }
+    static generateQRSession = async () => {
+        const sessionId = await generateQRSession();
+        if (!sessionId) throw new BadRequestError("Cannot generate QR session");
+        return {
+            sessionId
+        }
+    }
+    static approveQRLogin = async ({ userId, sessionId, accessToken, refreshToken }) => {
+        const sessionRaw = await redis.get(`qr_login:${sessionId}`);
+        if (!sessionRaw) throw new BadRequestError("Session not found");
+        const session = JSON.parse(sessionRaw);
+        if (session.status !== 'pending') throw new BadRequestError("QR already used or expired");
+        const updateSession = {
+            status: 'approved',
+            tokens: {
+                accessToken,
+                refreshToken
+            },
+            userId
+        }
+        await redis.set(`qr_login:${sessionId}`, JSON.stringify(updateSession), {
+            "EX": 180
+        })
+        return {
+            success: true,
+        }
+    }
+    static checkQRSession = async ({ sessionId }) => {
+        const sessionRaw = await redis.get(`qr_login:${sessionId}`);
+        if (!sessionRaw) throw new BadRequestError("QR expired or invalid");
+        const session = JSON.parse(sessionRaw);
+        if (session.status === 'approved') {
+            return {
+                status: 'approved',
+                tokens: session.tokens,
+                userId: session.userId
+            }
+        }
+        return { status: 'pending' };
+    }
+
 
 
 }
