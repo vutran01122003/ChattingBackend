@@ -1,71 +1,82 @@
-const AuthenticationService = require('../services/auth.service')
+const AuthenticationService = require("../services/auth.service");
 
-const { CREATED, SuccessResponse } = require('../core/success.response')
+const { CREATED, SuccessResponse } = require("../core/success.response");
+const { getUserByPhone } = require("../services/user.service");
 
 class AuthController {
     signUp = async (req, res, next) => {
         new SuccessResponse({
             message: "Sign up successfully",
             metadata: await AuthenticationService.signUp(req.body)
-        }).send(res)
-    }
+        }).send(res);
+    };
     verifyOTP = async (req, res, next) => {
         new SuccessResponse({
             message: "Verify OTP successfully",
             metadata: await AuthenticationService.verifyOTP(req.body)
-        }).send(res)
-    }
+        }).send(res);
+    };
     handleRefreshToken = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Refresh token successfully',
+            message: "Refresh token successfully",
             metadata: await AuthenticationService.handleRefreshToken({
                 keyStore: req.keyStore,
-                refreshToken: req.refreshToken, User: req.User
+                refreshToken: req.refreshToken,
+                User: req.User
             })
-        }).send(res)
-    }
+        }).send(res);
+    };
     logOut = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Logout successfully',
+            message: "Logout successfully",
             metadata: await AuthenticationService.logOut(req.keyStore)
-        }).send(res)
-    }
+        }).send(res);
+    };
     logIn = async (req, res, next) => {
         new SuccessResponse({
             message: "Login successfully",
             metadata: await AuthenticationService.login(req.body)
-        }).send(res)
-    }
+        }).send(res);
+    };
     introspectToken = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Introspect token successfully',
+            message: "Introspect token successfully",
             metadata: await AuthenticationService.introspectToken({ keyStore: req.keyStore, User: req.User })
-        }).send(res)
-    }
+        }).send(res);
+    };
+    getUserDataByToken = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get user successful",
+            metadata: {
+                user: await getUserByPhone({ phone: req.User.phone })
+            }
+        }).send(res);
+    };
     generateQR = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Generate QR code successfully',
+            message: "Generate QR code successfully",
             metadata: await AuthenticationService.generateQRSession()
-        }).send(res)
-    }
+        }).send(res);
+    };
     approveQRLogin = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Approve QR login successfully',
+            message: "Approve QR login successfully",
             metadata: await AuthenticationService.approveQRLogin({
                 userId: req.User.userId,
-                sessionId: req.body.sessionId, accessToken: req.body.accessToken, refreshToken: req.body.refreshToken
+                sessionId: req.body.sessionId,
+                accessToken: req.body.accessToken,
+                refreshToken: req.body.refreshToken
             })
         }).send(res);
-    }
+    };
     checkQRLogin = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Check QR login successfully',
+            message: "Check QR login successfully",
             metadata: await AuthenticationService.checkQRSession({
                 sessionId: req.query.sessionId
             })
         }).send(res);
-    }
-
+    };
 }
 
-module.exports = new AuthController()
+module.exports = new AuthController();
