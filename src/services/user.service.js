@@ -53,7 +53,7 @@ class UserService {
         return foundUser;
     }
     static changePassword = async ({ User, password, newPassword }) => {
-        return await changePassword({ userId: User.userId, password, newPassword })
+        return await changePassword({ userId: User.userId, phone: User.phone,password, newPassword })
     }
     static requestResetPassword = async ({ phone }) => {
         const foundUser = await findUserByPhoneNumber({ phone, select: ['phone', 'full_name', 'is_has_password'] });

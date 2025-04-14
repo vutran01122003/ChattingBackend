@@ -20,7 +20,8 @@ class AuthController {
             message: 'Refresh token successfully',
             metadata: await AuthenticationService.handleRefreshToken({
                 keyStore: req.keyStore,
-                refreshToken: req.refreshToken, User: req.User
+                refreshToken: req.refreshToken, User: req.User,
+                tokenVersion: req.tokenVersion
             })
         }).send(res)
     }

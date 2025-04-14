@@ -2,25 +2,25 @@
 
 POST {{url_dev}}/user/update-info
 Content-Type: application/json
-x-client-id:67f60a6e97b4c55c5263e5ef
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2MGE2ZTk3YjRjNTVjNTI2M2U1ZWYiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQxNzc3NzQsImV4cCI6MTc0NDM1MDU3NH0.yndnmrt89HBqBnPVE9hgDHAW33s15tt23R8sdo_MQqc
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTAyNiwiZXhwIjoxNzQ0Nzc3ODI2fQ.oADRHzHZITY--oBgcOXYACJvMLA5x6k3xEPMe0X-qPk
 
 {
-    "fullName": "John Doe",
+    "fullName": "Co gai ha lan",
     "dateOfBirth":"2003-07-22",
-    "gender": "male"
+    "gender": "female"
 }
 ### get user info
 GET {{url_dev}}/user/info
 Content-Type: application/json
-x-client-id:67f6b738898cd08cf81e3f2c
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyNDY1MjIsImV4cCI6MTc0NDQxOTMyMn0.UV0k19MACILffKlb4oQp_FBNgTgUsZQ529G6WSQVacs
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTQwNCwiZXhwIjoxNzQ0Nzc4MjA0fQ.50gilJReJRXD9hrMP6RVEtnURkwvh303MB6qvu7XeMw
 
 ### create password
 POST {{url_dev}}/user/create-password
 Content-Type: application/json
-x-client-id:67f6b738898cd08cf81e3f2c
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyNDY1MjIsImV4cCI6MTc0NDQxOTMyMn0.UV0k19MACILffKlb4oQp_FBNgTgUsZQ529G6WSQVacs
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTAyNiwiZXhwIjoxNzQ0Nzc3ODI2fQ.oADRHzHZITY--oBgcOXYACJvMLA5x6k3xEPMe0X-qPk
 
 {
     "password": "john123"
@@ -29,10 +29,10 @@ authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5O
 ### change password
 POST {{url_dev}}/user/change-password
 Content-Type: application/json
-x-client-id:67f4cd1324cc59f41ff7d212
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y0Y2QxMzI0Y2M1OWY0MWZmN2QyMTIiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQxMzEyMzEsImV4cCI6MTc0NDMwNDAzMX0.6oeuKkHN9lAN33e788FUzd1urMzXziIyJkw6totcaXw
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjMsImlhdCI6MTc0NDYwODY2OSwiZXhwIjoxNzQ0NzgxNDY5fQ.AKlxfQyxwfwXrgIin3VHcWRQz2rS2koIU-2EMSPvshk
 
 {
-    "password": "john1234",
-    "newPassword": "john123"
+    "password": "john123",
+    "newPassword": "john1234"
 }

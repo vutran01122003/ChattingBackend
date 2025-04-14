@@ -35,12 +35,16 @@ class AuthenticationService {
             throw new BadRequestError("Cannot create account")
         }
         const { publicKey, privateKey } = genSecretKey();
-        const tokens = await createTokenPair({ userId: newAccount._id, phone: newAccount.phone }, publicKey, privateKey);
+        const tokens = await createTokenPair({
+            userId: newAccount._id, phone: newAccount.phone,
+            tokenVersion: newAccount.token_version
+        }, publicKey, privateKey);
         const keyStore = KeyTokenService.createKeyToken({
             userId: newAccount._id,
             publicKey,
             privateKey,
-            refreshToken: tokens.refreshToken
+            refreshToken: tokens.refreshToken,
+            accessToken: tokens.accessToken
         })
         if (!keyStore) {
             throw new BadRequestError('Error key store')
@@ -51,7 +55,7 @@ class AuthenticationService {
         }
     }
     static handleRefreshToken = async ({ keyStore, refreshToken, User }) => {
-        const { userId, phone } = User;
+        const { userId, phone, tokenVersion } = User;
         if (keyStore.refreshTokenUsed.includes(refreshToken)) {
             await KeyTokenService.deleteKeyTokenById(userId);
             throw new ForbiddenError("Something went wrong, please try again!");
@@ -60,7 +64,7 @@ class AuthenticationService {
         const foundUser = await findUserByPhoneNumber({ phone, select: ['phone', 'full_name'] });
         if (!foundUser) throw new AuthFailureError('Something went wrong !')
 
-        const tokens = await createTokenPair({ userId, phone }, keyStore.publicKey, keyStore.privateKey);
+        const tokens = await createTokenPair({ userId, phone, tokenVersion }, keyStore.publicKey, keyStore.privateKey);
         await keyStore.updateOne({
             $set: {
                 refreshToken: tokens.refreshToken,
@@ -80,7 +84,8 @@ class AuthenticationService {
         return delKey;
     }
     static login = async ({ phone, password }) => {
-        const foundUser = await findUserByPhoneNumber({ phone, select: ['phone', 'full_name', 'password', 'is_has_password', '_id'] });
+        const foundUser = await findUserByPhoneNumber({ phone, select: ['phone', 'full_name',
+             'password', 'is_has_password', '_id', 'token_version'] });
         if (!foundUser) throw new BadRequestError('User not found!');
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) throw new AuthFailureError('Unauthorized!');
@@ -89,7 +94,8 @@ class AuthenticationService {
             const { publicKey, privateKey } = genSecretKey();
             const tokens = await createTokenPair({
                 userId: foundUser._id,
-                phone: foundUser.phone
+                phone: foundUser.phone,
+                tokenVersion: foundUser.token_version
             }, publicKey, privateKey);
             await KeyTokenService.createKeyToken({
                 userId: foundUser._id,
@@ -100,13 +106,13 @@ class AuthenticationService {
             })
             return {
                 user: getInfoData({ fields: ['full_name', 'phone', 'is_has_password', '_id'], object: foundUser }),
-                tokens 
+                tokens
             }
         }
 
         return {
             user: getInfoData({ fields: ['full_name', 'phone', 'is_has_password', '_id'], object: foundUser }),
-            tokens : {
+            tokens: {
                 accessToken: keyStore.accessToken,
                 refreshToken: keyStore.refreshToken
             }

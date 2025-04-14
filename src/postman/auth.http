@@ -4,7 +4,7 @@ POST {{url_dev}}/auth/signup
 Content-Type: application/json
 
 {
-    "phone":"0362594471"
+    "phone":"0942720329"
 }
 
 ### Login
@@ -12,8 +12,8 @@ POST {{url_dev}}/auth/login
 Content-Type: application/json
 
 {
-    "phone":"0362594471",
-    "password":"John123"
+    "phone":"0942720329",
+    "password":"john123"
 }
 
 ### Verify OTP
@@ -21,15 +21,15 @@ POST {{url_dev}}/auth/verify-otp
 Content-Type: application/json
 
 {
-    "otp":"847481",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJvdHAiOiI4NDc0ODEiLCJpYXQiOjE3NDQxNzc3NDAsImV4cCI6MTc0NDE3NzgwMH0.bYlglcaUBUUQlzxi0D02u2WuM0gJWb9mMvRDiJgok4M"
+    "otp":"246484",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5NDI3MjAzMjkiLCJvdHAiOiIyNDY0ODQiLCJpYXQiOjE3NDQ2MDQ5OTUsImV4cCI6MTc0NDYwNTA1NX0.bkL1h-A_hv1iIHCIzXSrro65N_1SXO73d7uarnEFLiM"
 }
 
 ### Refresh Token
 POST {{url_dev}}/auth/refresh-token
 Content-Type: application/json
-x-client-id:67f6b738898cd08cf81e3f2c
-refresh-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyMjIwMDgsImV4cCI6MTc0NDgyNjgwOH0.KPyZV56izf488j6DF6VlgM31tQoC3We57z7fzL9VUUQ
+x-client-id:67fc8f626ba178060c6b91e6
+refresh-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTAyNiwiZXhwIjoxNzQ1MjA5ODI2fQ.lbOtnw-jUtz7vuvPOMuz5b-aFjTfDjnOVdnL_AxBV6E
 
 
 ### logout

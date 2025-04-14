@@ -26,7 +26,7 @@ class UserController {
         new SuccessResponse({
             message: 'Change password successfully',
             metadata: await UserService.changePassword({
-                User: req.User, password:
+                User: req.User ,password:
                     req.body.password, newPassword: req.body.newPassword
             })
         }).send(res);
