@@ -70,6 +70,18 @@ class UserController {
             metadata: await UserService.checkPassword({ userId: req.User.userId, password: req.body.password })
         }).send(res);
     };
+    getAllUser = async (req, res, next) => {
+        return new SuccessResponse({
+            message: "Get all user successfully",
+            metadata: await UserService.getAllUser()
+        }).send(res);
+    };
+    getUserBySearch = async (req, res, next) => {
+        return new SuccessResponse({
+            message: "Get user by search successfully",
+            metadata: await UserService.getUserBySearch({ search: req.params.search })
+        }).send(res);
+    };
 }
 
 module.exports = new UserController();
