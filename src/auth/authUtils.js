@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("../helpers/asyncHandler");
-const { AuthFailureError, BadRequestError, NotFoundError } = require("../core/error.response");
+const { AuthFailureError, BadRequestError, NotFoundError, ForbiddenError } = require("../core/error.response");
+const { findUserById } = require("../models/repositories/user.repo");
 const KeyTokenService = require("../services/keytoken.service");
 
 const HEADER = {
@@ -39,6 +40,7 @@ const authentication = asyncHandler(async (req, res, next) => {
             req.keyStore = keyStore;
             req.User = decodedUser;
             req.refreshToken = refreshToken;
+            req.tokenVersion = decodedUser.tokenVersion;
             return next();
         } catch (err) {
             throw err;
@@ -50,6 +52,9 @@ const authentication = asyncHandler(async (req, res, next) => {
         const decodedUser = jwt.verify(accessToken, keyStore.publicKey);
         console.log("decodedUser::::", decodedUser);
         if (userId !== decodedUser.userId) throw new AuthFailureError("Invalid user");
+        const foundUser = await findUserById({ userId });
+        if (foundUser.token_version !== decodedUser.tokenVersion)
+            throw new ForbiddenError("Password changed! Please login again");
         req.keyStore = keyStore;
         req.User = decodedUser;
         return next();

@@ -29,7 +29,7 @@ const updateInfo = async ({ phone, fullName, dateOfBirth, gender, avatarUrl = nu
             }
         };
     return await userModel
-        .findOneAndUpdate(query, avatarUrl === null ? updateSet : updateSetHasAvatar, options)
+        .updateOne(query, avatarUrl === null ? updateSet : updateSetHasAvatar, options)
         .select(unGetSelectData(["__v", "friends", "is_online", "last_seen"]));
 };
 const updatePassword = async ({ User, password }) => {
@@ -49,7 +49,6 @@ const updatePassword = async ({ User, password }) => {
     }
     return null;
 };
-
 const changePassword = async ({ userId, password, newPassword }) => {
     const foundUser = await userModel.findById({ _id: convertToObjectId(userId) });
     if (!foundUser) throw new NotFoundError("Something went wrong!");

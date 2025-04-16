@@ -46,6 +46,10 @@ const UserSchema = new Schema({
     last_seen:{
         type: Date,
         default: Date.now
+    },
+    token_version: {
+        type: Number,
+        default: 1
     }
 }, {
     timestamps: true,

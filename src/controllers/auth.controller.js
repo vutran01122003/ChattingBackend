@@ -22,7 +22,8 @@ class AuthController {
             metadata: await AuthenticationService.handleRefreshToken({
                 keyStore: req.keyStore,
                 refreshToken: req.refreshToken,
-                User: req.User
+                User: req.User,
+                tokenVersion: req.tokenVersion
             })
         }).send(res);
     };
