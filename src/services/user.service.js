@@ -5,12 +5,15 @@ const {
     findUserByPhoneNumber,
     changePassword,
     resetPassword,
-    checkPassword
+    checkPassword,
+    getAllUser,
+    getUserBySearch
 } = require('../models/repositories/user.repo');
 const {createAndUploadAvatar, updateAvatar} = require('../helpers/createAvatar')
 const { sendSingleMessage } = require('../utils')
 const {Buffer} = require('buffer')
 const { generateOTPToken, verifyOTP } = require('../auth/genOTP');
+const { find } = require('../models/user.model');
 class UserService {
     static updateInfo = async ({ phone, fullName, dateOfBirth, gender }) => {
         const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
@@ -97,6 +100,16 @@ class UserService {
         if(!result) return {is_valid: false}
 
         return {is_valid: true}
+    }
+    static getAllUser = async ()  => {
+        const foundUser = await getAllUser();
+        if (!foundUser) throw new BadRequestError('Cannot find user')
+        return foundUser;
+    }
+    static getUserBySearch = async ({ search }) => {
+        const foundUser = await getUserBySearch({ search });
+        if (!foundUser) throw new BadRequestError('Cannot find user')
+        return foundUser;
     }
 }
 

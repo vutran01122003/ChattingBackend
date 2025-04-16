@@ -120,6 +120,24 @@ const findUserById = async ({ userId }) => {
     const foundUser = await userModel.findById({ _id: userId }).lean();
     return foundUser;
 }
+const getAllUser = async () => {
+    const foundUser = await userModel.find({}).select(unGetSelectData(['__v', 'friends', 'is_online', 'last_seen'])).lean()
+    if (!foundUser) throw new NotFoundError('Something went wrong!');
+    return foundUser;
+}
+
+const getUserBySearch = async ({ search }) => {
+    const foundUser = await userModel.find({
+        $or: [
+            { phone: { $regex: search, $options: 'i' } },
+            { full_name: { $regex: search, $options: 'i' } },
+        ]
+    }).select(unGetSelectData(['__v', 'friends', 'is_online', 'last_seen'])).lean()
+    if (!foundUser) throw new NotFoundError('Something went wrong!');
+    return foundUser;
+}
+
+
 module.exports = {
     findUserByPhoneNumber,
     createAccount,
@@ -129,5 +147,7 @@ module.exports = {
     changePassword,
     resetPassword,
     checkPassword,
-    findUserById
+    findUserById,
+    getAllUser,
+    getUserBySearch
 }
