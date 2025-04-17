@@ -1,0 +1,38 @@
+@url_dev=http://localhost:3055/v1/api
+
+POST {{url_dev}}/user/update-info
+Content-Type: application/json
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTAyNiwiZXhwIjoxNzQ0Nzc3ODI2fQ.oADRHzHZITY--oBgcOXYACJvMLA5x6k3xEPMe0X-qPk
+
+{
+    "fullName": "Co gai ha lan",
+    "dateOfBirth":"2003-07-22",
+    "gender": "female"
+}
+### get user info
+GET {{url_dev}}/user/info
+Content-Type: application/json
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTQwNCwiZXhwIjoxNzQ0Nzc4MjA0fQ.50gilJReJRXD9hrMP6RVEtnURkwvh303MB6qvu7XeMw
+
+### create password
+POST {{url_dev}}/user/create-password
+Content-Type: application/json
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTAyNiwiZXhwIjoxNzQ0Nzc3ODI2fQ.oADRHzHZITY--oBgcOXYACJvMLA5x6k3xEPMe0X-qPk
+
+{
+    "password": "john123"
+}
+
+### change password
+POST {{url_dev}}/user/change-password
+Content-Type: application/json
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjMsImlhdCI6MTc0NDYwODY2OSwiZXhwIjoxNzQ0NzgxNDY5fQ.AKlxfQyxwfwXrgIin3VHcWRQz2rS2koIU-2EMSPvshk
+
+{
+    "password": "john123",
+    "newPassword": "john1234"
+}

@@ -1,0 +1,51 @@
+@url_dev=http://localhost:3055/v1/api
+
+### Gửi tin nhắn mới (text hoặc có file)
+POST {{url_dev}}/messages
+Content-Type: application/json
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+
+{
+    "conversation_id": "67fc8f626ba178060c6b91e7",
+    "content": "Are you ok!"
+}
+
+### Lấy danh sách tin nhắn
+GET {{url_dev}}/conversations/67fc8f626ba178060c6b91e7/messages?page=1&limit=10
+Content-Type: application/json
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjYsImlhdCI6MTc0NDgxNzc5NywiZXhwIjoxNzQ0OTkwNTk3fQ.SNQ6RSWxXU0sBJ65JDzk35ylqDd16qZ0Ak76iDrkIkM
+
+### Thu hồi tin nhắn
+PUT {{url_dev}}/messages/67ff89d3315b0822c17d1212/revoke
+Content-Type: application/json
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+
+### Xoá tin nhắn
+PUT {{url_dev}}/messages/67ff86601e2756c8aa462937/delete
+Content-Type: application/json
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+
+### Chuyển tiếp tin nhắn
+POST {{url_dev}}/messages/forward
+Content-Type: application/json
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+
+{
+    "message_id": "67fc8f626ba178060c6b91e8",
+    "target_conversion_id": "67ff6fb4a23366e8b5d4aafc"
+}
+
+### Đánh dấu tin nhắn đã đọc
+PUT {{url_dev}}/messages/mark-as-read
+Content-Type: application/json
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+
+{
+    "conversation_id": "67ff6fb4a23366e8b5d4aafc"
+}

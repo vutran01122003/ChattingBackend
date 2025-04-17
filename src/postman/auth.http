@@ -1,0 +1,59 @@
+@url_dev=http://localhost:3055/v1/api
+
+POST {{url_dev}}/auth/signup
+Content-Type: application/json
+
+{
+    "phone":"0942720329"
+}
+
+### Login
+POST {{url_dev}}/auth/login
+Content-Type: application/json
+
+{
+    "phone":"0942720329",
+    "password":"john123"
+}
+
+### Verify OTP
+POST {{url_dev}}/auth/verify-otp
+Content-Type: application/json
+
+{
+    "otp":"246484",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5NDI3MjAzMjkiLCJvdHAiOiIyNDY0ODQiLCJpYXQiOjE3NDQ2MDQ5OTUsImV4cCI6MTc0NDYwNTA1NX0.bkL1h-A_hv1iIHCIzXSrro65N_1SXO73d7uarnEFLiM"
+}
+
+### Refresh Token
+POST {{url_dev}}/auth/refresh-token
+Content-Type: application/json
+x-client-id:67fc8f626ba178060c6b91e6
+refresh-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDYwNTAyNiwiZXhwIjoxNzQ1MjA5ODI2fQ.lbOtnw-jUtz7vuvPOMuz5b-aFjTfDjnOVdnL_AxBV6E
+
+
+### logout
+POST {{url_dev}}/auth/logout
+Content-Type: application/json
+x-client-id:67f6b738898cd08cf81e3f2c
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQyNTYzNzgsImV4cCI6MTc0NDQyOTE3OH0.UK3yAkN8hU8QNFtpcHHoZ_rWX_SXHWwairItgbi5HSM
+
+### generate qr session
+GET  {{url_dev}}/auth/generateQRSession
+Content-Type: application/json
+
+### approve qr session
+POST {{url_dev}}/auth/approveQRLogin
+Content-Type: application/json
+x-client-id:67f6b738898cd08cf81e3f2c
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQzNTY0ODgsImV4cCI6MTc0NDUyOTI4OH0.JhH_RP6Aa-AY0i8BQZ5NyYTd-a3QJT9HuqC1QqdC1ao
+
+{
+    "sessionId":"95e3cbf3-d105-4844-a636-cab2d5935c0f",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQzNTY0ODgsImV4cCI6MTc0NDUyOTI4OH0.JhH_RP6Aa-AY0i8BQZ5NyYTd-a3QJT9HuqC1QqdC1ao",
+    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2Y2YjczODg5OGNkMDhjZjgxZTNmMmMiLCJwaG9uZSI6IjAzNjI1OTQ0NzEiLCJpYXQiOjE3NDQzNTY0ODgsImV4cCI6MTc0NDk2MTI4OH0.dybHi7gRdh7gHYHOpNO3FsQCRVFWmNxvcOtRnlELFAQ"
+}
+
+### get qr session status
+GET {{url_dev}}/auth/checkQRSession?sessionId=95e3cbf3-d105-4844-a636-cab2d5935c0f
+Content-Type: application/json
