@@ -3,5 +3,6 @@ node_modules/
 
 # Ignore .env file
 .env
+config-env.txt
 # Ignore package-lock.json file
 package-lock.json
