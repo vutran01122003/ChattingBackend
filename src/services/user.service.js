@@ -1,4 +1,4 @@
-const { BadRequestError } = require("../core/error.response");
+const { BadRequestError, NotFoundError } = require("../core/error.response");
 const {
     updateInfo,
     updatePassword,
@@ -7,13 +7,14 @@ const {
     resetPassword,
     checkPassword,
     getAllUser,
-    getUserBySearch
+    getUserBySearch,
+    updateUserStatus
 } = require("../models/repositories/user.repo");
 const { createAndUploadAvatar, updateAvatar } = require("../helpers/createAvatar");
 const { sendSingleMessage } = require("../utils");
 const { Buffer } = require("buffer");
 const { generateOTPToken, verifyOTP } = require("../auth/genOTP");
-const { find } = require("../models/user.model");
+
 class UserService {
     static updateInfo = async ({ phone, fullName, dateOfBirth, gender }) => {
         console.log(dateOfBirth);
@@ -89,7 +90,6 @@ class UserService {
         };
     };
     static resetPassword = async ({ phone, newPassword }) => {
-        console.log({ phone, newPassword });
         const { modifiedCount } = await resetPassword({ phone, newPassword });
         if (modifiedCount === 0) {
             throw new BadRequestError("Cannot reset password");
@@ -121,6 +121,17 @@ class UserService {
         const foundUser = await getUserBySearch({ search });
         if (!foundUser) throw new BadRequestError("Cannot find user");
         return foundUser;
+    };
+
+    static updateUserStatus = async ({ userId, status = false, last_seen = new Date() }) => {
+        try {
+            const result = await updateUserStatus(userId, status, last_seen);
+
+            if (!result) throw new BadRequestError("Cannot update user status");
+            return result;
+        } catch (error) {
+            console.log(error);
+        }
     };
 }
 

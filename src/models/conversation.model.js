@@ -40,6 +40,9 @@ const ConversationSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        group_name: {
+            type: String,
+        },
         admin: [
             {
                 type: Schema.Types.ObjectId,

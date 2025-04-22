@@ -7,20 +7,27 @@ class UserController {
         console.log(req.body);
         return new SuccessResponse({
             message: "Update user successfully",
-            metadata: await UserService.updateInfo({ phone: req.User.phone, ...req.body })
+            metadata: await UserService.updateInfo({
+                phone: req.User.phone,
+                ...req.body
+            })
         }).send(res);
     };
     updatePassword = async (req, res, next) => {
         return new SuccessResponse({
             message: "Update password successfully",
-            metadata: await UserService.updatePassword({ User: req.User, password: req.body.password })
+            metadata: await UserService.updatePassword({
+                User: req.User,
+                password: req.body.password
+            })
         }).send(res);
     };
-
     getUserInfo = async (req, res, next) => {
         new SuccessResponse({
             message: "Get user info successfully",
-            metadata: await UserService.getUserByPhone({ phone: req.User.phone })
+            metadata: await UserService.getUserByPhone({
+                phone: req.User.phone
+            })
         }).send(res);
     };
     changePassword = async (req, res, next) => {
@@ -36,19 +43,27 @@ class UserController {
     requestResetPassword = async (req, res, next) => {
         return new SuccessResponse({
             message: "Request reset password successfully",
-            metadata: await UserService.requestResetPassword({ phone: req.body.phone })
+            metadata: await UserService.requestResetPassword({
+                phone: req.body.phone
+            })
         }).send(res);
     };
     verifyOTPResetPassword = async (req, res, next) => {
         return new SuccessResponse({
             message: "Verify OTP code successfully",
-            metadata: await UserService.verifyOTPResetPassword({ otp: req.body.otp, token: req.body.token })
+            metadata: await UserService.verifyOTPResetPassword({
+                otp: req.body.otp,
+                token: req.body.token
+            })
         }).send(res);
     };
     resetPassword = async (req, res, next) => {
         return new SuccessResponse({
             message: "Reset password successfully",
-            metadata: await UserService.resetPassword({ phone: req.body.phone, newPassword: req.body.newPassword })
+            metadata: await UserService.resetPassword({
+                phone: req.body.phone,
+                newPassword: req.body.newPassword
+            })
         }).send(res);
     };
     editProfile = async (req, res, next) => {
@@ -80,6 +95,17 @@ class UserController {
         return new SuccessResponse({
             message: "Get user by search successfully",
             metadata: await UserService.getUserBySearch({ search: req.params.search })
+        }).send(res);
+    };
+    updateUserStatus = async (req, res, next) => {
+        console.log("innnn");
+
+        return new SuccessResponse({
+            message: "Update user status successfully",
+            metadata: await UserService.updateUserStatus({
+                userId: req.User.userId,
+                ...req.body
+            })
         }).send(res);
     };
 }

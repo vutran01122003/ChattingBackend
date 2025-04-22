@@ -1,7 +1,9 @@
 const userModel = require("../user.model");
-const { getSelectData, unGetSelectData, convertToObjectId } = require("../../utils");
+const { getSelectData, unGetSelectData, convertToObjectId, genSecretKey } = require("../../utils");
 const { NotFoundError } = require("../../core/error.response");
 const bcrypt = require("bcrypt");
+const keytokenModel = require("../keytoken.model");
+const jwt = require("jsonwebtoken");
 const findUserByPhoneNumber = async ({ phone, select }) => {
     return await userModel.findOne({ phone }).select(getSelectData(select)).lean();
 };
@@ -49,20 +51,67 @@ const updatePassword = async ({ User, password }) => {
     }
     return null;
 };
-const changePassword = async ({ userId, password, newPassword }) => {
-    const foundUser = await userModel.findById({ _id: convertToObjectId(userId) });
+const changePassword = async ({ userId, phone, password, newPassword }) => {
+    const foundUser = await userModel.findById({
+        _id: convertToObjectId(userId)
+    });
     if (!foundUser) throw new NotFoundError("Something went wrong!");
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) throw new BadRequestError("Password is incorrect!");
     const passwordHash = await bcrypt.hash(newPassword, 10);
-    const userUpdate = await foundUser.updateOne({ $set: { password: passwordHash } }, { new: true });
+    const userUpdate = await userModel
+        .findOneAndUpdate(
+            { _id: foundUser._id },
+            {
+                $set: { password: passwordHash },
+                $inc: { token_version: 1 }
+            },
+            { new: true }
+        )
+        .select(unGetSelectData(["__v", "friends", "is_online", "last_seen", "password"]));
     if (userUpdate !== null) {
-        return userUpdate;
+        const keyStore = await keytokenModel.findOne({
+            user: convertToObjectId(userId)
+        });
+        if (keyStore) {
+            const payload = {
+                userId,
+                phone,
+                tokenVersion: userUpdate.token_version
+            };
+            const { publicKey, privateKey } = genSecretKey();
+            const accessToken = await jwt.sign(payload, publicKey, {
+                expiresIn: "2 days"
+            });
+            const refreshToken = await jwt.sign(payload, privateKey, {
+                expiresIn: "7 days"
+            });
+            await keyStore.updateOne({
+                $set: {
+                    refreshToken: refreshToken,
+                    accessToken: accessToken,
+                    publicKey,
+                    privateKey
+                }
+            });
+
+            return {
+                user: userUpdate,
+                tokens: {
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
+                }
+            };
+        }
+    } else {
+        throw new BadRequestError("Cannot change password");
     }
     return null;
 };
 const checkPassword = async ({ userId, password }) => {
-    const foundUser = await userModel.findById({ _id: convertToObjectId(userId) });
+    const foundUser = await userModel.findById({
+        _id: convertToObjectId(userId)
+    });
     if (!foundUser) throw new NotFoundError("Something went wrong!");
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) return false;
@@ -79,7 +128,9 @@ const resetPassword = async ({ phone, newPassword }) => {
     return null;
 };
 const updateAvatar = async ({ userId, avatarUrl }) => {
-    const foundUser = await userModel.findById({ _id: convertToObjectId(userId) });
+    const foundUser = await userModel.findById({
+        _id: convertToObjectId(userId)
+    });
     if (!foundUser) throw new NotFoundError("Something went wrong!");
     const userUpdate = await foundUser.updateOne({ $set: { avatar_url: avatarUrl } }, { new: true });
     if (userUpdate !== null) {
@@ -111,6 +162,11 @@ const getUserBySearch = async ({ search }) => {
     return foundUser;
 };
 
+const updateUserStatus = async (userId, status, last_seen) => {
+    const foundUser = await userModel.findByIdAndUpdate({ _id: userId }, { is_online: status, last_seen });
+
+    return foundUser;
+};
 module.exports = {
     findUserByPhoneNumber,
     createAccount,
@@ -122,5 +178,6 @@ module.exports = {
     checkPassword,
     findUserById,
     getAllUser,
-    getUserBySearch
+    getUserBySearch,
+    updateUserStatus
 };
