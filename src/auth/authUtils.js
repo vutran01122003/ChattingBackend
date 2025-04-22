@@ -50,7 +50,6 @@ const authentication = asyncHandler(async (req, res, next) => {
     if (!accessToken) throw new AuthFailureError("Invalid request");
     try {
         const decodedUser = jwt.verify(accessToken, keyStore.publicKey);
-        console.log("decodedUser::::", decodedUser);
         if (userId !== decodedUser.userId) throw new AuthFailureError("Invalid user");
         const foundUser = await findUserById({ userId });
         if (foundUser.token_version !== decodedUser.tokenVersion)

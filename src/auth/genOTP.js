@@ -23,7 +23,6 @@ const generateOTPToken = ({ phone, expiryMinutes = 1 }) => {
 const verifyOTP = ({ otp, token }) => {
     try {
         const decoded = jwt.verify(token, SECRET_KEY);
-        console.log(decoded);
         if (decoded.otp === otp) {
             return {
                 is_valid: true,

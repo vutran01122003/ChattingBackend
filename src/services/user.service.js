@@ -16,7 +16,6 @@ const { generateOTPToken, verifyOTP } = require("../auth/genOTP");
 const { find } = require("../models/user.model");
 class UserService {
     static updateInfo = async ({ phone, fullName, dateOfBirth, gender }) => {
-        console.log(dateOfBirth);
         const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
         if (age < 14) throw new BadRequestError("Age must be greater than 14");
         const avatarUrl = await createAndUploadAvatar(fullName);
@@ -89,7 +88,6 @@ class UserService {
         };
     };
     static resetPassword = async ({ phone, newPassword }) => {
-        console.log({ phone, newPassword });
         const { modifiedCount } = await resetPassword({ phone, newPassword });
         if (modifiedCount === 0) {
             throw new BadRequestError("Cannot reset password");
