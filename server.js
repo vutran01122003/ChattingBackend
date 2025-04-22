@@ -11,8 +11,8 @@ const server = app.listen(PORT, () => {
 const io = new Server(server, {
     cors: {
         origin: "*",
-        methods: ["GET", "POST"],
-    },
+        methods: ["GET", "POST"]
+    }
 });
 
 setupSocket(io);

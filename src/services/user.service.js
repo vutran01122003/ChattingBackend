@@ -17,7 +17,6 @@ const { generateOTPToken, verifyOTP } = require("../auth/genOTP");
 
 class UserService {
     static updateInfo = async ({ phone, fullName, dateOfBirth, gender }) => {
-        console.log(dateOfBirth);
         const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
         if (age < 14) throw new BadRequestError("Age must be greater than 14");
         const avatarUrl = await createAndUploadAvatar(fullName);
@@ -27,8 +26,9 @@ class UserService {
         return updateUser;
     };
     static editProfile = async ({ phone, fullName, dateOfBirth, gender, base64, file }) => {
+        console.log(dateOfBirth);
         const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
-        // if (age < 14) throw new BadRequestError("Age must be greater than 14");
+        if (age < 14) throw new BadRequestError("Age must be greater than 14");
 
         let avatarUrl = null;
 

@@ -69,6 +69,7 @@ const authenticationForSocket = async (userId, accessToken) => {
             error: "Invalid request"
         };
     const keyStore = await KeyTokenService.findByUserId(userId);
+
     if (!keyStore)
         return {
             isValid: false,

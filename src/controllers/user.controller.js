@@ -4,7 +4,6 @@ const { CREATED, SuccessResponse } = require("../core/success.response");
 
 class UserController {
     updateInfoUser = async (req, res, next) => {
-        console.log(req.body);
         return new SuccessResponse({
             message: "Update user successfully",
             metadata: await UserService.updateInfo({
@@ -98,8 +97,6 @@ class UserController {
         }).send(res);
     };
     updateUserStatus = async (req, res, next) => {
-        console.log("innnn");
-
         return new SuccessResponse({
             message: "Update user status successfully",
             metadata: await UserService.updateUserStatus({

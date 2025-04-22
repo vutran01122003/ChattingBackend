@@ -31,7 +31,7 @@ const updateInfo = async ({ phone, fullName, dateOfBirth, gender, avatarUrl = nu
             }
         };
     return await userModel
-        .updateOne(query, avatarUrl === null ? updateSet : updateSetHasAvatar, options)
+        .findOneAndUpdate(query, avatarUrl === null ? updateSet : updateSetHasAvatar, options)
         .select(unGetSelectData(["__v", "friends", "is_online", "last_seen"]));
 };
 const updatePassword = async ({ User, password }) => {
