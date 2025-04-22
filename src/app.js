@@ -5,9 +5,6 @@ const cors = require("cors");
 const { default: helmet } = require("helmet");
 const compression = require("compression");
 const app = express();
-const http = require("http").createServer(app);
-const setupSocket = require("./utils/socket.io");
-setupSocket(http);
 
 app.use(morgan("dev"));
 app.use(helmet());

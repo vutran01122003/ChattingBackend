@@ -30,10 +30,12 @@ const MessageSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        is_deleted: {
-            type: Boolean,
-            default: false,
-        },
+        deleted_by: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
         forwarded_from: {
             type: Schema.Types.ObjectId,
             ref: "Message",

@@ -37,7 +37,7 @@ class MessageService {
 
                     urlPath = await uploadBufferFileToCloudinary(
                         buffer,
-                        file.originalname + new Date().getTime()
+                        new Date().getTime() + file.originalname
                     );
 
                     const fileInfo = {
@@ -96,7 +96,6 @@ class MessageService {
 
             const messages = await Message.find({
                 conversation_id,
-                is_deleted: false,
             })
                 .populate({
                     path: "sender",
@@ -252,8 +251,6 @@ class MessageService {
     };
     static markMessagesAsRead = async ({ id, conversation_id }) => {
         try {
-            console.log("in");
-
             await Message.updateMany(
                 {
                     conversation_id,

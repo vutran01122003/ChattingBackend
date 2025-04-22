@@ -3,8 +3,8 @@
 ### Gửi tin nhắn mới (text hoặc có file)
 POST {{url_dev}}/messages
 Content-Type: application/json
-x-client-id:67ff6544b864082a861acd8e
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+x-client-id:67fc8f626ba178060c6b91e6
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJpYXQiOjE3NDQ4NjM2MjcsImV4cCI6MTc0NTAzNjQyN30.tRgRzbMnIhj0UDg356cCRToWe9ZGOX7MfaBL8Mm_V3Y
 
 {
     "conversation_id": "67fc8f626ba178060c6b91e7",
@@ -15,7 +15,7 @@ authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4N
 GET {{url_dev}}/conversations/67fc8f626ba178060c6b91e7/messages?page=1&limit=10
 Content-Type: application/json
 x-client-id:67fc8f626ba178060c6b91e6
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjYsImlhdCI6MTc0NDgxNzc5NywiZXhwIjoxNzQ0OTkwNTk3fQ.SNQ6RSWxXU0sBJ65JDzk35ylqDd16qZ0Ak76iDrkIkM
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJpYXQiOjE3NDQ4NjM2MjcsImV4cCI6MTc0NTAzNjQyN30.tRgRzbMnIhj0UDg356cCRToWe9ZGOX7MfaBL8Mm_V3Y
 
 ### Thu hồi tin nhắn
 PUT {{url_dev}}/messages/67ff89d3315b0822c17d1212/revoke
