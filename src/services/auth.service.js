@@ -97,7 +97,8 @@ class AuthenticationService {
                 "_id",
                 "date_of_birth",
                 "avatar_url",
-                "gender"
+                "gender",
+                "token_version"
             ]
         });
         if (!foundUser) throw new BadRequestError("User not found!");

@@ -14,9 +14,20 @@ router.get("/getUserBySearch/:search", asyncHandler(UserController.getUserBySear
 router.use(authentication);
 router.get("/info", asyncHandler(UserController.getUserInfo));
 router.post("/update-info", asyncHandler(UserController.updateInfoUser));
-router.post("/check-password", asyncHandler(UserController.checkPassword));
+router.post("/check-password", asyncHandler(UserController.checkPassword));     
 router.post("/create-password", asyncHandler(UserController.updatePassword));
 router.post("/change-password", asyncHandler(UserController.changePassword));
 router.post("/edit-profile", asyncHandler(UserController.editProfile));
+router.post("/send-friend-request/:friendId", asyncHandler(UserController.sendFriendRequest));
+router.post("/cancel-friend-request/:receiverId", asyncHandler(UserController.cancelFriendRequest));
+router.post("/decline-friend-request/:senderId", asyncHandler(UserController.declineFriendRequest));
+router.post("/accept-friend-request/:senderId", asyncHandler(UserController.acceptFriendRequest));
+router.post("/unfriend/:friendId", asyncHandler(UserController.unfriend));
+router.get("/check-friendship/:friendId", asyncHandler(UserController.checkFriendShip));
+router.get("/check-send-friend-request/:friendId", asyncHandler(UserController.checkSendFriendRequest));
+router.get("/check-receive-friend-request/:friendId", asyncHandler(UserController.checkReceiveFriendRequest));
+router.get("/get-send-friend-request", asyncHandler(UserController.getSendFriendRequest));
+router.get("/get-receive-friend-request", asyncHandler(UserController.getReceiveFriendRequest));
+router.get("/get-friend-list", asyncHandler(UserController.getFriendList));
 
 module.exports = router;
