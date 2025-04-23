@@ -16,7 +16,7 @@ const allowedFileTypes = {
     },
     document: {
         mime: /^application\/(pdf|msword|vnd\.openxmlformats-officedocument|vnd\.ms-excel|vnd\.ms-powerpoint)|text\/plain/,
-        ext: /\.(pdf|docx?|xlsx?|pptx?|txt)$/i,
+        ext: /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt)$/i,
         maxSize: 10 * 1024 * 1024, // 10MB
         maxCount: 1,
     },
@@ -51,12 +51,11 @@ const uploadMultipleFiles = multer({
     storage,
     fileFilter,
     limits: {
-        fileSize: 50 * 1024 * 1024, // global limit
-        files: 3, // max files accepted, adjusted later based on logic
+        fileSize: 50 * 1024 * 1024,
+        files: 3,
     },
-}).array("files", 3); // max up to 3 files allowed for any case
+}).array("files", 3);
 
-// Middleware to enforce conditional limit
 const conditionalUpload = (req, res, next) => {
     uploadMultipleFiles(req, res, (err) => {
         if (err) return next(err);
