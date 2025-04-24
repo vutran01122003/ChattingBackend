@@ -58,6 +58,24 @@ class MessageController {
             }),
         }).send(res);
     }
+    async addReaction(req, res) {
+        return new SuccessResponse({
+            message: "Add reaction successfully",
+            metadata: await MessageService.addReaction({
+                id: req.User.userId,
+                ...req.body,
+            }),
+        }).send(res);
+    }
+    async removeReaction(req, res) {
+        return new SuccessResponse({
+            message: "Remove reaction successfully",
+            metadata: await MessageService.removeReaction({
+                id: req.User.userId,
+                message_id: req.body.message_id,
+            }),
+        }).send(res);
+    }
 }
 
 module.exports = new MessageController();

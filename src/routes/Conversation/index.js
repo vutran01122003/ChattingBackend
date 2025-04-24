@@ -7,11 +7,15 @@ const asyncHandler = require("../../helpers/asyncHandler");
 router.use(authentication);
 
 router.get(
+    "/conversations/:conversation_id",
+    asyncHandler(ConversationController.getUserConversation)
+);
+router.get(
     "/conversations",
-    asyncHandler(ConversationController.getUserConversations)
+    asyncHandler(ConversationController.getAllUserConversations)
 );
 router.post(
     "/conversations",
-    asyncHandler(ConversationController.createOrGetConversation)
+    asyncHandler(ConversationController.createConversation)
 );
 module.exports = router;

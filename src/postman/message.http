@@ -24,10 +24,10 @@ x-client-id:67ff6544b864082a861acd8e
 authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
 
 ### Xoá tin nhắn
-PUT {{url_dev}}/messages/67ff86601e2756c8aa462937/delete
+PUT {{url_dev}}/messages/680905d225ecac4e1c48cffe/delete
 Content-Type: application/json
 x-client-id:67ff6544b864082a861acd8e
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTM0MDkxMCwiZXhwIjoxNzQ1NTEzNzEwfQ.83mi83Bo_XYOc5PAFx9U_iW4k-NDkoZpEUSvIfKnmOw
 
 ### Chuyển tiếp tin nhắn
 POST {{url_dev}}/messages/forward
@@ -48,4 +48,25 @@ authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4N
 
 {
     "conversation_id": "67ff6fb4a23366e8b5d4aafc"
+}
+
+### Add Reaction to Message
+POST {{url_dev}}/messages/reaction
+Content-Type: application/json
+x-client-id:6801ce58f92ca12177596d90
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5MmNhMTIxNzc1OTZkOTAiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTI1MzQzNywiZXhwIjoxNzQ1NDI2MjM3fQ.NyB--NiWUQXGANtC-cBT5vKpbdsMPLY4NOsY1pWugN4
+
+{
+    "message_id": "6809101bc419efb29519af2f",
+    "emoji": ":heart"
+}
+
+### Remove Reaction from Message
+DELETE {{url_dev}}/messages/reaction
+Content-Type: application/json
+x-client-id:6801ce58f92ca12177596d90
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5MmNhMTIxNzc1OTZkOTAiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTI1MzQzNywiZXhwIjoxNzQ1NDI2MjM3fQ.NyB--NiWUQXGANtC-cBT5vKpbdsMPLY4NOsY1pWugN4
+
+{
+    "message_id": "6809101bc419efb29519af2f"
 }

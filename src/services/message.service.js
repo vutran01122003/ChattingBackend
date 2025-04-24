@@ -184,7 +184,7 @@ class MessageService {
                 );
             }
 
-            message.is_deleted = true;
+            message.deleted_by.push(id);
             await message.save();
 
             return message;
@@ -272,6 +272,61 @@ class MessageService {
             throw new InternalServerError(
                 "Error when marking messages as read"
             );
+        }
+    };
+    static addReaction = async ({ id, message_id, emoji }) => {
+        try {
+            const message = await Message.findById(message_id);
+
+            if (!message) {
+                throw new NotFoundError("Cannot find message");
+            }
+
+            const validEmojis = [
+                ":heart",
+                ":like",
+                ":haha",
+                ":wow",
+                ":huhu",
+                ":angry",
+            ];
+            if (!validEmojis.includes(emoji)) {
+                throw new BadRequestError("Invalid emoji");
+            }
+
+            const existingReaction = message.reactions.find(
+                (reaction) => reaction.user.toString() === id.toString()
+            );
+
+            if (existingReaction) {
+                existingReaction.emoji = emoji;
+            } else {
+                message.reactions.push({ user: id, emoji });
+            }
+
+            await message.save();
+            return message;
+        } catch (error) {
+            throw new InternalServerError("Error when adding reaction");
+        }
+    };
+
+    static removeReaction = async ({ id, message_id }) => {
+        try {
+            const message = await Message.findById(message_id);
+
+            if (!message) {
+                throw new NotFoundError("Cannot find message");
+            }
+
+            message.reactions = message.reactions.filter(
+                (reaction) => reaction.user.toString() !== id.toString()
+            );
+
+            await message.save();
+            return message;
+        } catch (error) {
+            throw new InternalServerError("Error when removing reaction");
         }
     };
 }

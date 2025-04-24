@@ -1,12 +1,56 @@
 const {
     InternalServerError,
     NotFoundError,
+    BadRequestError,
 } = require("../core/error.response");
 const Conversation = require("../models/conversation.model");
 const User = require("../models/user.model");
 
 class ConversationService {
-    static getUserConversations = async ({ id }) => {
+    static getConversation = async ({ id, conversationId }) => {
+        try {
+            const conversation = await Conversation.findOne({
+                _id: conversationId,
+                participants: id,
+            })
+                .populate({
+                    path: "participants",
+                    select: "full_name phone avatar_url is_online last_seen",
+                })
+                .populate({
+                    path: "last_message",
+                    select: "content sender attachments is_revoked deleted_by createdAt",
+                });
+
+            if (!conversation) {
+                throw new NotFoundError(
+                    "Conversation not found or user is not a participant"
+                );
+            }
+
+            const otherParticipants = conversation.participants.filter(
+                (par) => par._id.toString() !== id.toString()
+            );
+
+            const response = {
+                conversation_id: conversation._id,
+                other_user: otherParticipants,
+                last_message: conversation.last_message,
+                last_message_time: conversation.last_message_time,
+                conversation_type: conversation.conversation_type,
+                group_name: conversation.group_name,
+                group_avatar: conversation.group_avatar,
+                is_group: conversation.is_group,
+                admin: conversation.admin,
+            };
+
+            return response;
+        } catch (error) {
+            throw new InternalServerError("Error when fetching conversation");
+        }
+    };
+
+    static getAllUserConversations = async ({ id }) => {
         try {
             const conversations = await Conversation.find({
                 participants: id,
@@ -17,18 +61,18 @@ class ConversationService {
                 })
                 .populate({
                     path: "last_message",
-                    select: "content sender attachments is_revoked is_deleted createdAt",
+                    select: "content sender attachments is_revoked deleted_by createdAt",
                 })
                 .sort({ last_message_time: -1 });
 
             const formattedConversations = conversations.map((conv) => {
-                const otherParticipant = conv.participants.find(
+                const otherUser = conv.participants.filter(
                     (par) => par._id.toString() !== id.toString()
                 );
 
                 return {
                     conversation_id: conv._id,
-                    other_user: otherParticipant,
+                    other_user: otherUser,
                     last_message: conv.last_message,
                     last_message_time: conv.last_message_time,
                     conversation_type: conv.conversation_type,
@@ -37,6 +81,10 @@ class ConversationService {
                             readInfo.user.toString() === id.toString() &&
                             readInfo.read_at > conv.last_message_time
                     ),
+                    group_name: conv.group_name,
+                    group_avatar: conv.group_avatar,
+                    is_group: conv.is_group,
+                    admin: conv.admin,
                 };
             });
 
@@ -48,40 +96,125 @@ class ConversationService {
                 (conv) => conv.conversation_type === "stranger"
             );
 
+            const groupConversations = formattedConversations.filter(
+                (conv) => conv.conversation_type === "group"
+            );
+
             return {
                 friends: friendConversations,
                 strangers: strangerConversations,
+                groups: groupConversations,
             };
         } catch (error) {
             throw new InternalServerError("Error when fetching conversation");
         }
     };
-    static createOrGetConversation = async ({ id, otherUserId }) => {
-        try {
-            const otherUser = await User.findById(otherUserId);
 
-            if (!otherUser) {
-                throw new NotFoundError("Cannot find user");
+    static createConversation = async ({ id, otherUserId, groupName }) => {
+        try {
+            let participants = [id];
+
+            if (!otherUserId) {
+                throw new BadRequestError("otherUserId is required");
             }
 
-            const user = await User.findById(id);
+            if (!groupName) {
+                let singleUserId;
+                if (Array.isArray(otherUserId)) {
+                    if (otherUserId.length !== 1) {
+                        throw new BadRequestError(
+                            "otherUserId must be a single user ID or an array with exactly one ID for normal conversation"
+                        );
+                    }
+                    singleUserId = otherUserId[0];
+                } else {
+                    singleUserId = otherUserId;
+                }
 
-            const isFriend = user.friends.includes(otherUserId);
-            const conversationType = isFriend ? "friend" : "stranger";
+                const otherUser = await User.findById(singleUserId);
+                if (!otherUser) {
+                    throw new NotFoundError("Other user not found");
+                }
 
-            let conversation = await Conversation.findOne({
-                participants: { $all: [id, otherUserId] },
-            });
+                participants.push(singleUserId);
 
-            if (!conversation) {
-                conversation = new Conversation({
-                    participants: [id, otherUserId],
-                    conversation_type: conversationType,
-                    read_by: [{ user: id, read_at: new Date() }],
+                const user = await User.findById(id);
+                if (!user) {
+                    throw new NotFoundError("User not found");
+                }
+
+                const isFriend = user.friends.includes(singleUserId);
+                const conversationType = isFriend ? "friend" : "stranger";
+
+                let conversation = await Conversation.findOne({
+                    participants: { $all: [id, singleUserId], $size: 2 },
+                    is_group: false,
                 });
 
-                await conversation.save();
+                if (!conversation) {
+                    conversation = new Conversation({
+                        participants,
+                        conversation_type: conversationType,
+                        read_by: [{ user: id, read_at: new Date() }],
+                        is_group: false,
+                    });
+
+                    await conversation.save();
+                }
+
+                await conversation.populate({
+                    path: "participants",
+                    select: "full_name phone avatar_url is_online last_seen",
+                });
+
+                await conversation.populate({
+                    path: "last_message",
+                    select: "content sender attachments is_revoked deleted_by createdAt",
+                });
+
+                const otherParticipants = conversation.participants.filter(
+                    (par) => par._id.toString() !== id.toString()
+                );
+
+                const response = {
+                    conversation_id: conversation._id,
+                    other_user: otherParticipants,
+                    last_message: conversation.last_message,
+                    last_message_time: conversation.last_message_time,
+                    conversation_type: conversation.conversation_type,
+                    group_name: conversation.group_name,
+                    group_avatar: conversation.group_avatar,
+                    is_group: conversation.is_group,
+                    admin: conversation.admin,
+                };
+                return response;
             }
+
+            if (!Array.isArray(otherUserId) || otherUserId.length < 2) {
+                throw new BadRequestError(
+                    "Group conversation requires at least 3 participants including creator (otherUserId must be an array with 2+ IDs)"
+                );
+            }
+
+            const users = await User.find({ _id: { $in: otherUserId } });
+            if (users.length !== otherUserId.length) {
+                throw new NotFoundError("One or more users not found");
+            }
+
+            participants = participants.concat(otherUserId);
+
+            const conversation = new Conversation({
+                participants,
+                conversation_type: "group",
+                read_by: [{ user: id, read_at: new Date() }],
+                group_avatar:
+                    "https://cdn-icons-png.flaticon.com/512/166/166258.png",
+                group_name: groupName,
+                is_group: true,
+                admin: [id],
+            });
+
+            await conversation.save();
 
             await conversation.populate({
                 path: "participants",
@@ -90,23 +223,28 @@ class ConversationService {
 
             await conversation.populate({
                 path: "last_message",
-                select: "content sender attachments is_revoked is_deleted createdAt",
+                select: "content sender attachments is_revoked deleted_by createdAt",
             });
 
-            const otherParticipant = conversation.participants.find(
+            const otherParticipants = conversation.participants.filter(
                 (par) => par._id.toString() !== id.toString()
             );
 
-            return {
+            const response = {
                 conversation_id: conversation._id,
-                other_user: otherParticipant,
+                other_user: otherParticipants,
+                participants: conversation.participants,
                 last_message: conversation.last_message,
+                last_message_time: conversation.last_message_time,
                 conversation_type: conversation.conversation_type,
+                group_name: conversation.group_name,
+                group_avatar: conversation.group_avatar,
+                is_group: conversation.is_group,
+                admin: conversation.admin,
             };
+            return response;
         } catch (error) {
-            throw new InternalServerError(
-                "Error when create or get conversation"
-            );
+            throw new InternalServerError("Error when creating conversation");
         }
     };
 }

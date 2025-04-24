@@ -21,7 +21,7 @@ const ConversationSchema = new Schema(
         },
         conversation_type: {
             type: String,
-            enum: ["friend", "stranger"],
+            enum: ["friend", "stranger", "group"],
             default: "stranger",
         },
         read_by: [
@@ -41,6 +41,9 @@ const ConversationSchema = new Schema(
             default: false,
         },
         group_name: {
+            type: String,
+        },
+        group_avatar: {
             type: String,
         },
         admin: [

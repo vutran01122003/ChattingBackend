@@ -2,20 +2,29 @@ const { SuccessResponse } = require("../core/success.response");
 const ConversationService = require("../services/conversation.service");
 
 class ConversationController {
-    async getUserConversations(req, res) {
+    async getUserConversation(req, res) {
         return new SuccessResponse({
-            message: "Get User Conversations successfully",
-            metadata: await ConversationService.getUserConversations({
+            message: "Get User Conversation successfully",
+            metadata: await ConversationService.getConversation({
+                id: req.User.userId,
+                conversationId: req.params.conversation_id,
+            }),
+        }).send(res);
+    }
+    async getAllUserConversations(req, res) {
+        return new SuccessResponse({
+            message: "Get All User Conversations successfully",
+            metadata: await ConversationService.getAllUserConversations({
                 id: req.User.userId,
             }),
         }).send(res);
     }
-    async createOrGetConversation(req, res) {
+    async createConversation(req, res) {
         return new SuccessResponse({
-            message: "Create or Get Conversation successfully",
-            metadata: await ConversationService.createOrGetConversation({
+            message: "Create conversation successfully",
+            metadata: await ConversationService.createConversation({
                 id: req.User.userId,
-                otherUserId: req.body.otherUserId,
+                ...req.body,
             }),
         }).send(res);
     }
