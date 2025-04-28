@@ -33,11 +33,11 @@ authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4N
 POST {{url_dev}}/messages/forward
 Content-Type: application/json
 x-client-id:67ff6544b864082a861acd8e
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NDc5MTc3OSwiZXhwIjoxNzQ0OTY0NTc5fQ.Ju26zLIautA6vfVd9dqMrQisBra-1_XIxrT5324cK0M
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTc0NTc1MSwiZXhwIjoxNzQ1OTE4NTUxfQ.lgZYb3kXF-joMn-srD0a--ZhIfMcoXvMJbDDz-jGnVE
 
 {
-    "message_id": "67fc8f626ba178060c6b91e8",
-    "target_conversion_id": "67ff6fb4a23366e8b5d4aafc"
+    "message_id": "680f2bb9fc50cb7101eda805",
+    "target_conversion_id": "680a1ecf6c0533a454ff6a6c"
 }
 
 ### Đánh dấu tin nhắn đã đọc
@@ -64,9 +64,9 @@ authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5M
 ### Remove Reaction from Message
 DELETE {{url_dev}}/messages/reaction
 Content-Type: application/json
-x-client-id:6801ce58f92ca12177596d90
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5MmNhMTIxNzc1OTZkOTAiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTI1MzQzNywiZXhwIjoxNzQ1NDI2MjM3fQ.NyB--NiWUQXGANtC-cBT5vKpbdsMPLY4NOsY1pWugN4
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTg1NDUyMSwiZXhwIjoxNzQ2MDI3MzIxfQ.C-F4agL-fUEblj6yn49vcwKvrgJJb4Xm2_7S03I9K54
 
 {
-    "message_id": "6809101bc419efb29519af2f"
+    "message_id": "680f44cf7f678e8671892919"
 }

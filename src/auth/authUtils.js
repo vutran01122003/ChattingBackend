@@ -1,26 +1,31 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("../helpers/asyncHandler");
-const { AuthFailureError, BadRequestError, NotFoundError, ForbiddenError } = require("../core/error.response");
+const {
+    AuthFailureError,
+    BadRequestError,
+    NotFoundError,
+    ForbiddenError,
+} = require("../core/error.response");
 const { findUserById } = require("../models/repositories/user.repo");
 const KeyTokenService = require("../services/keytoken.service");
 
 const HEADER = {
     CLIENT_ID: "x-client-id",
     AUTHORIZATION: "authorization",
-    REFRESHTOKEN: "refresh-token"
+    REFRESHTOKEN: "refresh-token",
 };
 
 const createTokenPair = async (payload, publicKey, privateKey) => {
     try {
         const accessToken = await jwt.sign(payload, publicKey, {
-            expiresIn: "2 days"
+            expiresIn: "2 days",
         });
         const refreshToken = await jwt.sign(payload, privateKey, {
-            expiresIn: "7 days"
+            expiresIn: "7 days",
         });
         return {
             accessToken,
-            refreshToken
+            refreshToken,
         };
     } catch (error) {
         throw new BadRequestError("Error signing token");
@@ -36,7 +41,8 @@ const authentication = asyncHandler(async (req, res, next) => {
         const refreshToken = req.headers[HEADER.REFRESHTOKEN];
         try {
             const decodedUser = jwt.verify(refreshToken, keyStore.privateKey);
-            if (userId !== decodedUser.userId) throw new AuthFailureError("Invalid user");
+            if (userId !== decodedUser.userId)
+                throw new AuthFailureError("Invalid user");
             req.keyStore = keyStore;
             req.User = decodedUser;
             req.refreshToken = refreshToken;
@@ -50,7 +56,8 @@ const authentication = asyncHandler(async (req, res, next) => {
     if (!accessToken) throw new AuthFailureError("Invalid request");
     try {
         const decodedUser = jwt.verify(accessToken, keyStore.publicKey);
-        if (userId !== decodedUser.userId) throw new AuthFailureError("Invalid user");
+        if (userId !== decodedUser.userId)
+            throw new AuthFailureError("Invalid user");
         const foundUser = await findUserById({ userId });
         if (foundUser.token_version !== decodedUser.tokenVersion)
             throw new ForbiddenError("Password changed! Please login again");
@@ -58,7 +65,7 @@ const authentication = asyncHandler(async (req, res, next) => {
         req.User = decodedUser;
         return next();
     } catch (error) {
-        throw error;
+        throw new AuthFailureError("Invalid token");
     }
 });
 
@@ -66,27 +73,27 @@ const authenticationForSocket = async (userId, accessToken) => {
     if (!userId)
         return {
             isValid: false,
-            error: "Invalid request"
+            error: "Invalid request",
         };
     const keyStore = await KeyTokenService.findByUserId(userId);
 
     if (!keyStore)
         return {
             isValid: false,
-            error: "Key store not found"
+            error: "Key store not found",
         };
 
     if (!accessToken)
         return {
             isValid: false,
-            error: "Invalid request"
+            error: "Invalid request",
         };
     try {
         const decodedUser = jwt.verify(accessToken, keyStore.publicKey);
         if (userId !== decodedUser.userId)
             return {
                 isValid: false,
-                error: "Invalid user"
+                error: "Invalid user",
             };
         const foundUser = await findUserById({ userId });
         if (foundUser.token_version !== decodedUser.tokenVersion)
@@ -105,5 +112,5 @@ module.exports = {
     createTokenPair,
     authentication,
     verifyJWT,
-    authenticationForSocket
+    authenticationForSocket,
 };

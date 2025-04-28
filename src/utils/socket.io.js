@@ -23,7 +23,7 @@ const setupSocket = (io) => {
         await UserService.updateUserStatus({
             userId: socket.userId,
             status: true,
-        });
+        }).then(() => {});
 
         socket.emit("user_status", {
             userId: socket.userId,
@@ -59,17 +59,17 @@ const setupSocket = (io) => {
         });
 
         socket.on("revoke_message", (data) => {
-            io.to(`conversation_${data.conversation_id}`).emit(
-                "message_revoked",
-                data
-            );
+            socket.broadcast
+                .to(`conversation_${data.conversation_id}`)
+                .emit("message_revoked", data);
+
+            socket.broadcast.emit("conversation_updated", data);
         });
 
         socket.on("delete_message", (data) => {
-            io.to(`conversation_${data.conversation_id}`).emit(
-                "message_deleted",
-                data
-            );
+            socket.broadcast
+                .to(`conversation_${data.conversation_id}`)
+                .emit("message_deleted", data);
         });
 
         socket.on("forward_message", (data) => {
@@ -77,13 +77,20 @@ const setupSocket = (io) => {
                 "message_forwarded",
                 data
             );
+            socket.broadcast.emit("conversation_updated", data);
+        });
+
+        socket.on("focus_chat_page", (data) => {
+            io.to(`conversation_${data.conversation_id}`).emit(
+                "focused_on_page",
+                data
+            );
         });
 
         socket.on("mark_read", (data) => {
-            io.to(`conversation_${data.conversation_id}`).emit(
-                "message_read",
-                data
-            );
+            socket.broadcast
+                .to(`conversation_${data.conversation_id}`)
+                .emit("message_read", data);
         });
 
         socket.on("typing", (data) => {
@@ -99,6 +106,18 @@ const setupSocket = (io) => {
             socket.broadcast
                 .to(`conversation_${data.conversation_id}`)
                 .emit("user_stop_typing");
+        });
+
+        socket.on("add_reaction", (data) => {
+            socket.broadcast
+                .to(`conversation_${data.conversation_id}`)
+                .emit("reaction_addded", data);
+        });
+
+        socket.on("remove_reaction", (data) => {
+            socket.broadcast
+                .to(`conversation_${data.conversation_id}`)
+                .emit("reaction_removed", data);
         });
 
         socket.on("disconnect", async () => {

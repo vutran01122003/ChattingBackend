@@ -165,7 +165,10 @@ class MessageService {
             message.is_revoked = true;
             await message.save();
 
-            return message;
+            return await message.populate({
+                path: "sender",
+                select: "full_name phone avatar_url",
+            });
         } catch (error) {
             throw new InternalServerError("Error when revoking message");
         }
@@ -178,16 +181,13 @@ class MessageService {
                 throw new NotFoundError("Cannot find message");
             }
 
-            if (message.sender.toString() !== id.toString()) {
-                throw new ForbiddenError(
-                    "You are not authourized to delete this message"
-                );
-            }
-
             message.deleted_by.push(id);
             await message.save();
 
-            return message;
+            return await message.populate({
+                path: "sender",
+                select: "full_name phone avatar_url",
+            });
         } catch (error) {
             throw new InternalServerError("Error when revoking message");
         }
@@ -276,6 +276,8 @@ class MessageService {
     };
     static addReaction = async ({ id, message_id, emoji }) => {
         try {
+            console.log(message_id, emoji);
+
             const message = await Message.findById(message_id);
 
             if (!message) {
@@ -305,7 +307,10 @@ class MessageService {
             }
 
             await message.save();
-            return message;
+            return await message.populate({
+                path: "sender",
+                select: "full_name phone avatar_url",
+            });
         } catch (error) {
             throw new InternalServerError("Error when adding reaction");
         }
@@ -324,7 +329,10 @@ class MessageService {
             );
 
             await message.save();
-            return message;
+            return await message.populate({
+                path: "sender",
+                select: "full_name phone avatar_url",
+            });
         } catch (error) {
             throw new InternalServerError("Error when removing reaction");
         }
