@@ -15,6 +15,8 @@ const io = new Server(server, {
     }
 });
 
+global.io = io;
+
 setupSocket(io);
 
 process.on("SIGINT", () => {

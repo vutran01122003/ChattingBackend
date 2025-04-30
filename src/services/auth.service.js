@@ -1,21 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const redis = require("../configs/config.redis");
-const {
-    findUserByPhoneNumber,
-    createAccount,
-} = require("../models/repositories/user.repo");
-const {
-    BadRequestError,
-    AuthFailureError,
-    ForbiddenError,
-} = require("../core/error.response");
-const {
-    sendSingleMessage,
-    genSecretKey,
-    getInfoData,
-    generateQRSession,
-} = require("../utils");
+const { findUserByPhoneNumber, createAccount } = require("../models/repositories/user.repo");
+const { BadRequestError, AuthFailureError, ForbiddenError } = require("../core/error.response");
+const { sendSingleMessage, genSecretKey, getInfoData, generateQRSession } = require("../utils");
 const { generateOTPToken, verifyOTP } = require("../auth/genOTP");
 const { createTokenPair } = require("../auth/authUtils");
 
@@ -31,7 +19,7 @@ class AuthenticationService {
         const result = await sendSingleMessage(phone, message);
         if (result) {
             return {
-                token,
+                token
             };
         }
     };
@@ -49,7 +37,7 @@ class AuthenticationService {
             {
                 userId: newAccount._id,
                 phone: newAccount.phone,
-                tokenVersion: newAccount.token_version,
+                tokenVersion: newAccount.token_version
             },
             publicKey,
             privateKey
@@ -59,7 +47,7 @@ class AuthenticationService {
             publicKey,
             privateKey,
             refreshToken: tokens.refreshToken,
-            accessToken: tokens.accessToken,
+            accessToken: tokens.accessToken
         });
         if (!keyStore) {
             throw new BadRequestError("Error key store");
@@ -67,9 +55,9 @@ class AuthenticationService {
         return {
             user: getInfoData({
                 fields: ["full_name", "phone", "_id"],
-                object: newAccount,
+                object: newAccount
             }),
-            tokens,
+            tokens
         };
     };
     static handleRefreshToken = async ({ keyStore, refreshToken, User }) => {
@@ -78,31 +66,26 @@ class AuthenticationService {
             await KeyTokenService.deleteKeyTokenById(userId);
             throw new ForbiddenError("Something went wrong, please try again!");
         }
-        if (keyStore.refreshToken !== refreshToken)
-            throw new AuthFailureError("Invalid refresh token");
+        if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError("Invalid refresh token");
         const foundUser = await findUserByPhoneNumber({
             phone,
-            select: ["phone", "full_name"],
+            select: ["phone", "full_name"]
         });
         if (!foundUser) throw new AuthFailureError("Something went wrong !");
 
-        const tokens = await createTokenPair(
-            { userId, phone, tokenVersion },
-            keyStore.publicKey,
-            keyStore.privateKey
-        );
+        const tokens = await createTokenPair({ userId, phone, tokenVersion }, keyStore.publicKey, keyStore.privateKey);
         await keyStore.updateOne({
             $set: {
                 refreshToken: tokens.refreshToken,
-                accessToken: tokens.accessToken,
+                accessToken: tokens.accessToken
             },
             $addToSet: {
-                refreshTokenUsed: refreshToken,
-            },
+                refreshTokenUsed: refreshToken
+            }
         });
         return {
             user: { ...foundUser },
-            tokens,
+            tokens
         };
     };
     static logOut = async (keyStore) => {
@@ -121,8 +104,8 @@ class AuthenticationService {
                 "date_of_birth",
                 "avatar_url",
                 "gender",
-                "token_version",
-            ],
+                "token_version"
+            ]
         });
         if (!foundUser) throw new BadRequestError("User not found!");
         const isMatch = await bcrypt.compare(password, foundUser.password);
@@ -134,7 +117,7 @@ class AuthenticationService {
                 {
                     userId: foundUser._id,
                     phone: foundUser.phone,
-                    tokenVersion: foundUser.token_version,
+                    tokenVersion: foundUser.token_version
                 },
                 publicKey,
                 privateKey
@@ -144,22 +127,14 @@ class AuthenticationService {
                 publicKey,
                 privateKey,
                 accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
+                refreshToken: tokens.refreshToken
             });
             return {
                 user: getInfoData({
-                    fields: [
-                        "full_name",
-                        "phone",
-                        "is_has_password",
-                        "_id",
-                        "date_of_birth",
-                        "avatar_url",
-                        "gender",
-                    ],
-                    object: foundUser,
+                    fields: ["full_name", "phone", "is_has_password", "_id", "date_of_birth", "avatar_url", "gender"],
+                    object: foundUser
                 }),
-                tokens,
+                tokens
             };
         }
         const updateAt = new Date(keyStore.updatedAt);
@@ -172,7 +147,7 @@ class AuthenticationService {
                 {
                     userId: foundUser._id,
                     phone: foundUser.phone,
-                    tokenVersion: foundUser.token_version,
+                    tokenVersion: foundUser.token_version
                 },
                 publicKey,
                 privateKey
@@ -182,50 +157,34 @@ class AuthenticationService {
                 publicKey,
                 privateKey,
                 accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
+                refreshToken: tokens.refreshToken
             });
             return {
                 user: getInfoData({
-                    fields: [
-                        "full_name",
-                        "phone",
-                        "is_has_password",
-                        "_id",
-                        "date_of_birth",
-                        "avatar_url",
-                        "gender",
-                    ],
-                    object: foundUser,
+                    fields: ["full_name", "phone", "is_has_password", "_id", "date_of_birth", "avatar_url", "gender"],
+                    object: foundUser
                 }),
-                tokens,
+                tokens
             };
         } else if (keyStore && updateAt < twoDaysAgo) {
             return new AuthFailureError("Token expired!");
         }
         return {
             user: getInfoData({
-                fields: [
-                    "full_name",
-                    "phone",
-                    "is_has_password",
-                    "_id",
-                    "date_of_birth",
-                    "avatar_url",
-                    "gender",
-                ],
-                object: foundUser,
+                fields: ["full_name", "phone", "is_has_password", "_id", "date_of_birth", "avatar_url", "gender"],
+                object: foundUser
             }),
             tokens: {
                 accessToken: keyStore.accessToken,
-                refreshToken: keyStore.refreshToken,
-            },
+                refreshToken: keyStore.refreshToken
+            }
         };
     };
 
     static introspectToken = async ({ keyStore, User }) => {
         if (!keyStore || !User) throw new AuthFailureError("Invalid request");
         return {
-            is_valid: true,
+            is_valid: true
         };
     };
 
@@ -234,37 +193,27 @@ class AuthenticationService {
 
         if (!sessionId) throw new BadRequestError("Cannot generate QR session");
         return {
-            sessionId,
+            sessionId
         };
     };
-    static approveQRLogin = async ({
-        userId,
-        sessionId,
-        accessToken,
-        refreshToken,
-    }) => {
+    static approveQRLogin = async ({ userId, sessionId, accessToken, refreshToken }) => {
         const sessionRaw = await redis.get(`qr_login:${sessionId}`);
         if (!sessionRaw) throw new BadRequestError("Session not found");
         const session = JSON.parse(sessionRaw);
-        if (session.status !== "pending")
-            throw new BadRequestError("QR already used or expired");
+        if (session.status !== "pending") throw new BadRequestError("QR already used or expired");
         const updateSession = {
             status: "approved",
             tokens: {
                 accessToken,
-                refreshToken,
+                refreshToken
             },
-            userId,
+            userId
         };
-        await redis.set(
-            `qr_login:${sessionId}`,
-            JSON.stringify(updateSession),
-            {
-                EX: 180,
-            }
-        );
+        await redis.set(`qr_login:${sessionId}`, JSON.stringify(updateSession), {
+            EX: 180
+        });
         return {
-            success: true,
+            success: true
         };
     };
     static checkQRSession = async ({ sessionId }) => {
@@ -275,7 +224,7 @@ class AuthenticationService {
             return {
                 status: "approved",
                 tokens: session.tokens,
-                userId: session.userId,
+                userId: session.userId
             };
         }
         return { status: "pending" };

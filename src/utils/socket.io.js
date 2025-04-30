@@ -14,30 +14,32 @@ const setupSocket = (io) => {
     });
 
     const onlineUsers = new Map();
+    global.onlineUsers = onlineUsers;
 
     io.on("connection", async (socket) => {
         const { userId } = socket.handshake.auth;
         if (!userId) return socket.disconnect();
 
         socket.userId = userId;
-        await UserService.updateUserStatus({
+        UserService.updateUserStatus({
             userId: socket.userId,
-            status: true,
-        }).then(() => {});
+            status: true
+        });
 
         socket.emit("user_status", {
             userId: socket.userId,
-            status: "online",
+            status: "online"
         });
 
         socket.on("connected_user", async (userId) => {
             socket.userId = userId;
+
             onlineUsers.set(userId, socket.id);
 
             const users = [];
             onlineUsers.forEach((value, key, map) => {
                 users.push({
-                    [key]: value,
+                    [key]: value
                 });
             });
             io.emit("user_online_list", users);
@@ -45,79 +47,55 @@ const setupSocket = (io) => {
 
         socket.on("join_conversation", (conversationId) => {
             socket.join(`conversation_${conversationId}`);
-            console.log(
-                `User ${socket.userId} joined conversation ${conversationId}`
-            );
+            console.log(`User ${socket.userId} joined conversation ${conversationId}`);
         });
 
         socket.on("send_message", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("receive_message", data);
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("receive_message", data);
 
             socket.broadcast.emit("conversation_updated", data);
         });
 
         socket.on("revoke_message", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("message_revoked", data);
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("message_revoked", data);
 
             socket.broadcast.emit("conversation_updated", data);
         });
 
         socket.on("delete_message", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("message_deleted", data);
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("message_deleted", data);
         });
 
         socket.on("forward_message", (data) => {
-            io.to(`conversation_${data.conversation_id}`).emit(
-                "message_forwarded",
-                data
-            );
+            io.to(`conversation_${data.conversation_id}`).emit("message_forwarded", data);
             socket.broadcast.emit("conversation_updated", data);
         });
 
         socket.on("focus_chat_page", (data) => {
-            io.to(`conversation_${data.conversation_id}`).emit(
-                "focused_on_page",
-                data
-            );
+            io.to(`conversation_${data.conversation_id}`).emit("focused_on_page", data);
         });
 
         socket.on("mark_read", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("message_read", data);
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("message_read", data);
         });
 
         socket.on("typing", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("user_typing", {
-                    user: data.user,
-                    conversation_id: data.conversation_id,
-                });
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("user_typing", {
+                user: data.user,
+                conversation_id: data.conversation_id
+            });
         });
 
         socket.on("stop_typing", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("user_stop_typing");
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("user_stop_typing");
         });
 
         socket.on("add_reaction", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("reaction_addded", data);
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("reaction_addded", data);
         });
 
         socket.on("remove_reaction", (data) => {
-            socket.broadcast
-                .to(`conversation_${data.conversation_id}`)
-                .emit("reaction_removed", data);
+            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("reaction_removed", data);
         });
 
         socket.on("disconnect", async () => {
@@ -126,22 +104,21 @@ const setupSocket = (io) => {
             await UserService.updateUserStatus({
                 userId: socket.userId,
                 status: false,
-                last_seen: new Date(),
+                last_seen: new Date()
             });
 
             io.emit("user_status", {
                 userId: socket.userId,
-                status: "offline",
+                status: "offline"
             });
         });
 
         socket.on("call_user", (data) => {
-            socket
-                .to(onlineUsers.get(data.receiver._id))
-                .emit("answer_user", data);
+            socket.to(onlineUsers.get(data.receiver._id)).emit("answer_user", data);
         });
 
         socket.on("end_call", (data) => {
+            console.log(data);
             socket.to(onlineUsers.get(data.restUserId)).emit("end_call", data);
         });
 
@@ -150,15 +127,11 @@ const setupSocket = (io) => {
         });
 
         socket.on("play_video", (data) => {
-            socket
-                .to(onlineUsers.get(data.userId))
-                .emit("play_remote_video", data);
+            socket.to(onlineUsers.get(data.userId)).emit("play_remote_video", data);
         });
 
         socket.on("play_video_receiver", (data) => {
-            socket
-                .to(onlineUsers.get(data.receiverId))
-                .emit("play_video_receiver", data);
+            socket.to(onlineUsers.get(data.receiverId)).emit("play_video_receiver", data);
         });
     });
 

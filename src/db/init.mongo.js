@@ -12,10 +12,10 @@ class Database {
     }
 
     connect(type = "mongodb") {
-        if (true) {
-            mongoose.set("debug", true);
-            mongoose.set("debug", { color: true });
-        }
+        // if (true) {
+        //     mongoose.set("debug", true);
+        //     mongoose.set("debug", { color: true });
+        // }
         mongoose
             .connect(connectString, {
                 maxPoolSize: 50
