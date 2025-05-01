@@ -21,6 +21,7 @@ const setupSocket = (io) => {
         if (!userId) return socket.disconnect();
 
         socket.userId = userId;
+
         UserService.updateUserStatus({
             userId: socket.userId,
             status: true
@@ -59,11 +60,11 @@ const setupSocket = (io) => {
         socket.on("revoke_message", (data) => {
             socket.broadcast.to(`conversation_${data.conversation_id}`).emit("message_revoked", data);
 
-            socket.broadcast.emit("conversation_updated", data);
+            io.emit("conversation_updated", data);
         });
 
         socket.on("delete_message", (data) => {
-            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("message_deleted", data);
+            io.to(`conversation_${data.conversation_id}`).emit("message_deleted", data);
         });
 
         socket.on("forward_message", (data) => {
@@ -91,11 +92,11 @@ const setupSocket = (io) => {
         });
 
         socket.on("add_reaction", (data) => {
-            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("reaction_addded", data);
+            io.to(`conversation_${data.conversation_id}`).emit("reaction_addded", data);
         });
 
         socket.on("remove_reaction", (data) => {
-            socket.broadcast.to(`conversation_${data.conversation_id}`).emit("reaction_removed", data);
+            io.to(`conversation_${data.conversation_id}`).emit("reaction_removed", data);
         });
 
         socket.on("disconnect", async () => {

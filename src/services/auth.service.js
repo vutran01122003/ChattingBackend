@@ -108,6 +108,7 @@ class AuthenticationService {
             ]
         });
         if (!foundUser) throw new BadRequestError("User not found!");
+        console.log(password);
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) throw new AuthFailureError("Unauthorized!");
         const keyStore = await KeyTokenService.findByUserId(foundUser._id);

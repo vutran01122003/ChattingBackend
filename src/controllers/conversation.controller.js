@@ -7,16 +7,16 @@ class ConversationController {
             message: "Get User Conversation successfully",
             metadata: await ConversationService.getConversation({
                 id: req.User.userId,
-                conversationId: req.params.conversation_id,
-            }),
+                conversationId: req.params.conversation_id
+            })
         }).send(res);
     }
     async getAllUserConversations(req, res) {
         return new SuccessResponse({
             message: "Get All User Conversations successfully",
             metadata: await ConversationService.getAllUserConversations({
-                id: req.User.userId,
-            }),
+                id: req.User.userId
+            })
         }).send(res);
     }
     async createConversation(req, res) {
@@ -25,7 +25,8 @@ class ConversationController {
             metadata: await ConversationService.createConversation({
                 id: req.User.userId,
                 ...req.body,
-            }),
+                file: req.file
+            })
         }).send(res);
     }
 }
