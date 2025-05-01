@@ -8,12 +8,12 @@ router.post("/request-reset-password", asyncHandler(UserController.requestResetP
 router.post("/verify-reset-password", asyncHandler(UserController.verifyOTPResetPassword));
 router.post("/reset-password", asyncHandler(UserController.resetPassword));
 router.get("/getAllUser", asyncHandler(UserController.getAllUser));
-router.get("/getUserBySearch/:search", asyncHandler(UserController.getUserBySearch));
+
 
 router.use(authentication);
 router.get("/info", asyncHandler(UserController.getUserInfo));
 router.post("/update-info", asyncHandler(UserController.updateInfoUser));
-
+router.get("/getUserBySearch/:search", asyncHandler(UserController.getUserBySearch));
 router.post("/update-status", asyncHandler(UserController.updateUserStatus));
 router.post("/check-password", asyncHandler(UserController.checkPassword));
 router.post("/create-password", asyncHandler(UserController.updatePassword));
