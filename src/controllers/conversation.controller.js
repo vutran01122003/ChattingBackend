@@ -29,6 +29,27 @@ class ConversationController {
             })
         }).send(res);
     }
+
+    async updateConversation(req, res) {
+        return new SuccessResponse({
+            message: "Update conversation successfully",
+            metadata: await ConversationService.updateConversation({
+                id: req.User.userId,
+                ...req.body,
+                file: req.file
+            })
+        }).send(res);
+    }
+
+    async updateMembersToConversation(req, res) {
+        return new SuccessResponse({
+            message: "Update conversation members successfully",
+            metadata: await ConversationService.updateMembersToConversation({
+                id: req.User.userId,
+                ...req.body
+            })
+        }).send(res);
+    }
 }
 
 module.exports = new ConversationController();

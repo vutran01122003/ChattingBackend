@@ -129,8 +129,8 @@ class UserService {
         if (!foundUser) throw new BadRequestError("Cannot find user");
         return foundUser;
     };
-    static getUserBySearch = async ({ search }) => {
-        const foundUser = await getUserBySearch({ search });
+    static getUserBySearch = async ({ search, userId, forGroup }) => {
+        const foundUser = await getUserBySearch({ search, userId, forGroup });
         if (!foundUser) throw new BadRequestError("Cannot find user");
         return foundUser;
     };

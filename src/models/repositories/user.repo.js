@@ -1,4 +1,5 @@
 const userModel = require("../user.model");
+const Message = require("../message.model");
 const { getSelectData, unGetSelectData, convertToObjectId, genSecretKey } = require("../../utils");
 const { NotFoundError } = require("../../core/error.response");
 const bcrypt = require("bcrypt");
@@ -151,15 +152,48 @@ const getAllUser = async () => {
     return foundUser;
 };
 
-const getUserBySearch = async ({ search }) => {
-    const foundUser = await userModel
+const getUserBySearch = async ({ search, userId, forGroup }) => {
+    if (!search || typeof search !== "string") throw new Error("Invalid search term");
+
+    const currentUser = await userModel.findById(userId).lean();
+    if (!currentUser) throw new NotFoundError("Người dùng không tồn tại.");
+
+    if (/^\d{8,15}$/.test(search)) {
+        const friends = currentUser.friends;
+        const exactUser = await userModel.find({ phone: search }).lean();
+
+        console.log({
+            friends,
+            exactUser: exactUser[0]._id,
+            forGroup
+        });
+
+        if (forGroup && !friends.find((friendId) => friendId.toString() === exactUser[0]._id.toString()))
+            throw new NotFoundError("Không tìm thấy người dùng nào.");
+
+        if (!exactUser || exactUser.length === 0) throw new NotFoundError("Không tìm thấy người dùng nào.");
+        return exactUser;
+    }
+
+    const friends = currentUser.friends || [];
+
+    const messages = await Message.find({
+        $or: [{ read_by: userId }, { sender: userId }]
+    }).lean();
+
+    const messagedUsers = messages.map((msg) => msg.sender.toString()).filter((id) => id !== userId);
+
+    const searchUserIds = [...new Set([...friends, ...messagedUsers])];
+
+    const foundUsers = await userModel
         .find({
-            $or: [{ phone: { $regex: search, $options: "i" } }, { full_name: { $regex: search, $options: "i" } }]
+            _id: { $in: searchUserIds },
+            full_name: { $regex: search, $options: "i" }
         })
-        .select(unGetSelectData(["__v", "friends", "is_online", "last_seen"]))
         .lean();
-    if (!foundUser) throw new NotFoundError("Something went wrong!");
-    return foundUser;
+
+    if (!foundUsers || foundUsers.length === 0) throw new NotFoundError("Không tìm thấy người phù hợp.");
+    return foundUsers;
 };
 
 const updateUserStatus = async (userId, status, last_seen) => {
@@ -387,7 +421,10 @@ const checkSendFriendRequest = async ({ phone, friendId }) => {
     }
     const isSentRequestForSender = sender.sentRequests.some((friend) => friend.equals(friendId));
     if (!isSentRequestForSender) {
-        return { isSentRequest: false, message: "You have not sent a friend request." };
+        return {
+            isSentRequest: false,
+            message: "You have not sent a friend request."
+        };
     }
     return { isSentRequest: true, message: "You have sent a friend request." };
 };
@@ -404,9 +441,15 @@ const checkReceiveFriendRequest = async ({ phone, friendId }) => {
     }
     const isReceiveRequestForReceiver = receiver.friendRequests.some((friend) => friend.equals(friendId));
     if (!isReceiveRequestForReceiver) {
-        return { isReceiveRequest: false, message: "You have not received a friend request." };
+        return {
+            isReceiveRequest: false,
+            message: "You have not received a friend request."
+        };
     }
-    return { isReceiveRequest: true, message: "You have received a friend request." };
+    return {
+        isReceiveRequest: true,
+        message: "You have received a friend request."
+    };
 };
 
 const getSendFriendRequest = async ({ phone }) => {

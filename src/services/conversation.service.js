@@ -34,7 +34,11 @@ class ConversationService {
                 group_name: conversation.group_name,
                 group_avatar: conversation.group_avatar,
                 is_group: conversation.is_group,
-                admin: conversation.admin
+                admin: conversation.admin,
+                sub_admin: conversation.sub_admin,
+                allow_send_message: conversation.allow_send_message,
+                allow_change_group_info: conversation.allow_change_group_info,
+                is_active: conversation.is_active
             };
 
             return response;
@@ -74,7 +78,11 @@ class ConversationService {
                     group_name: conv.group_name,
                     group_avatar: conv.group_avatar,
                     is_group: conv.is_group,
-                    admin: conv.admin
+                    admin: conv.admin,
+                    sub_admin: conv.sub_admin,
+                    allow_send_message: conv.allow_send_message,
+                    allow_change_group_info: conv.allow_change_group_info,
+                    is_active: conv.is_active
                 };
             });
 
@@ -93,6 +101,155 @@ class ConversationService {
             };
         } catch (error) {
             throw new InternalServerError("Error when fetching conversation");
+        }
+    };
+
+    static updateMembersToConversation = async ({ id, conversationId, userIdList, status }) => {
+        try {
+            const conversation = await Conversation.findById(conversationId);
+            if (!conversation) throw new NotFoundError("Conversation does not exist");
+
+            if (status === "add-members") conversation.participants.push(...userIdList);
+            else {
+                const participants = [...conversation.participants];
+                const sub_admin = [...conversation.sub_admin];
+                const admin = [...conversation.admin];
+
+                conversation.participants = participants.filter(
+                    (participantId) => !userIdList.includes(participantId.toString())
+                );
+
+                conversation.sub_admin = sub_admin.filter(
+                    (sub_admin_id) => !userIdList.includes(sub_admin_id.toString())
+                );
+
+                conversation.admin = admin.filter((admin_id) => !userIdList.includes(admin_id.toString()));
+
+                if (conversation.admin.length === 0) {
+                    if (conversation.sub_admin.length > 0) {
+                        conversation.admin.push(conversation.sub_admin[0]);
+                        conversation.sub_admin.shift();
+                    } else {
+                        if (conversation.participants.length > 0) conversation.admin.push(conversation.participants[0]);
+                        else conversation.is_active = false;
+                    }
+                }
+            }
+
+            await conversation.save();
+
+            const populatedConversation = await Conversation.populate(conversation, [
+                {
+                    path: "participants",
+                    select: "full_name phone avatar_url is_online last_seen"
+                },
+                {
+                    path: "last_message",
+                    select: "content sender attachments is_revoked deleted_by createdAt"
+                }
+            ]);
+
+            return {
+                conversation_id: populatedConversation._id,
+                other_user: populatedConversation.participants.filter((person) => person._id.toString() !== id),
+                last_message: populatedConversation.last_message,
+                last_message_time: populatedConversation.last_message_time,
+                conversation_type: populatedConversation.conversation_type,
+                unread: !populatedConversation.read_by.some(
+                    (readInfo) =>
+                        readInfo.user.toString() === id.toString() &&
+                        readInfo.read_at > populatedConversation.last_message_time
+                ),
+                group_name: populatedConversation.group_name,
+                group_avatar: populatedConversation.group_avatar,
+                is_group: populatedConversation.is_group,
+                admin: populatedConversation.admin,
+                sub_admin: populatedConversation.sub_admin,
+                allow_send_message: populatedConversation.allow_send_message,
+                allow_change_group_info: populatedConversation.allow_change_group_info,
+                is_active: populatedConversation.is_active
+            };
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError("Error when add member to conversation");
+        }
+    };
+
+    static updateConversation = async ({
+        id,
+        conversationId,
+        groupName,
+        file,
+        admin,
+        subAdmin,
+        subAdminStatus,
+        allowSendMessage,
+        allowChangeGroupInfo,
+        isActive
+    }) => {
+        try {
+            let group_avatar = null;
+
+            if (file) {
+                const buffer = file?.buffer;
+                if (!buffer) throw new BadRequestError("Invalid image data");
+
+                group_avatar = await updateAvatar(file.originalname, buffer);
+                if (!group_avatar) throw new BadRequestError("Cannot create avatar");
+            }
+
+            const updateQuery = {
+                $push: {},
+                $pull: {},
+                $set: {}
+            };
+
+            if (subAdmin && subAdminStatus === "add-sub-admin") updateQuery.$push.sub_admin = subAdmin;
+            if (subAdmin && subAdminStatus === "delete-sub-admin") updateQuery.$pull.sub_admin = subAdmin[0];
+            if (groupName) updateQuery.$set.group_name = groupName;
+            if (allowSendMessage !== undefined) updateQuery.$set.allow_send_message = allowSendMessage;
+            if (allowChangeGroupInfo !== undefined) updateQuery.$set.allow_change_group_info = allowChangeGroupInfo;
+            if (isActive !== undefined) updateQuery.$set.is_active = isActive;
+            if (group_avatar) updateQuery.$set.group_avatar = group_avatar;
+            if (admin) updateQuery.$set.admin = admin;
+            if (Object.keys(updateQuery.$push).length === 0) delete updateQuery.$push;
+            if (Object.keys(updateQuery.$pull).length === 0) delete updateQuery.$pull;
+            if (Object.keys(updateQuery.$set).length === 0) delete updateQuery.$set;
+
+            const updatedConversation = await Conversation.findByIdAndUpdate(conversationId, updateQuery, {
+                new: true
+            }).populate([
+                {
+                    path: "participants",
+                    select: "full_name phone avatar_url is_online last_seen"
+                },
+                {
+                    path: "last_message",
+                    select: "content sender attachments is_revoked deleted_by createdAt"
+                }
+            ]);
+
+            if (!updatedConversation) return NotFoundError("Conversation does not exist");
+
+            const response = {
+                conversation_id: updatedConversation._id,
+                other_user: updatedConversation.participants.filter((person) => person._id.toString() !== id),
+                last_message: updatedConversation.last_message,
+                last_message_time: updatedConversation.last_message_time,
+                conversation_type: updatedConversation.conversation_type,
+                group_name: updatedConversation.group_name,
+                group_avatar: updatedConversation.group_avatar,
+                is_group: updatedConversation.is_group,
+                admin: updatedConversation.admin,
+                sub_admin: updatedConversation.sub_admin,
+                allow_send_message: updatedConversation.allow_send_message,
+                allow_change_group_info: updatedConversation.allow_change_group_info,
+                is_active: updatedConversation.is_active
+            };
+            return response;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError("Error when update conversation");
         }
     };
 
@@ -171,7 +328,11 @@ class ConversationService {
                     group_name: conversation.group_name,
                     group_avatar: conversation.group_avatar,
                     is_group: conversation.is_group,
-                    admin: conversation.admin
+                    admin: conversation.admin,
+                    sub_admin: conversation.sub_admin,
+                    allow_send_message: conversation.allow_send_message,
+                    allow_change_group_info: conversation.allow_change_group_info,
+                    is_active: conversation.is_active
                 };
                 return response;
             }
@@ -190,12 +351,10 @@ class ConversationService {
             let group_avatar = "https://cdn-icons-png.flaticon.com/512/166/166258.png";
 
             if (file) {
-                console.log(file);
                 const buffer = file?.buffer;
                 if (!buffer) throw new BadRequestError("Invalid image data");
 
                 group_avatar = await updateAvatar(file.originalname, buffer);
-                console.log(group_avatar);
                 if (!group_avatar) throw new BadRequestError("Cannot create avatar");
             }
 
@@ -233,7 +392,11 @@ class ConversationService {
                 group_name: conversation.group_name,
                 group_avatar: conversation.group_avatar,
                 is_group: conversation.is_group,
-                admin: conversation.admin
+                admin: conversation.admin,
+                sub_admin: conversation.sub_admin,
+                allow_send_message: conversation.allow_send_message,
+                allow_change_group_info: conversation.allow_change_group_info,
+                is_active: conversation.is_active
             };
             return response;
         } catch (error) {
