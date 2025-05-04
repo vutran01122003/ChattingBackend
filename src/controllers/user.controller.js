@@ -93,7 +93,11 @@ class UserController {
     getUserBySearch = async (req, res, next) => {
         return new SuccessResponse({
             message: "Get user by search successfully",
-            metadata: await UserService.getUserBySearch({ search: req.params.search , userId: req.User.userId})
+            metadata: await UserService.getUserBySearch({
+                search: req.params.search,
+                forGroup: req.query.forGroup,
+                userId: req.User.userId
+            })
         }).send(res);
     };
     updateUserStatus = async (req, res, next) => {

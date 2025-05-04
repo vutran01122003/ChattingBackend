@@ -69,7 +69,7 @@ const setupSocket = (io) => {
 
         socket.on("forward_message", (data) => {
             io.to(`conversation_${data.conversation_id}`).emit("message_forwarded", data);
-            socket.broadcast.emit("conversation_updated", data);
+            io.emit("conversation_updated", data);
         });
 
         socket.on("focus_chat_page", (data) => {
@@ -133,6 +133,41 @@ const setupSocket = (io) => {
 
         socket.on("play_video_receiver", (data) => {
             socket.to(onlineUsers.get(data.receiverId)).emit("play_video_receiver", data);
+        });
+
+        socket.on("create_conversation", (data) => {
+            const otherUser = data.other_user;
+            const socketIds = [];
+            otherUser.forEach((user) => {
+                const socketId = onlineUsers.get(user._id);
+                if (socketId) socketIds.push(socketId);
+            });
+
+            if (socketIds.length > 0) io.sockets.to(socketIds).emit("create_conversation", data);
+        });
+
+        socket.on("update_conversation_members", (data) => {
+            console.log(data);
+            const otherUser = data.status === "add-members" ? data.other_user : [...data.other_user, data.removedUser];
+
+            const socketIds = [];
+            otherUser.forEach((user) => {
+                const socketId = onlineUsers.get(user._id);
+                if (socketId) socketIds.push(socketId);
+            });
+
+            if (socketIds.length > 0) io.sockets.to(socketIds).emit("update_conversation_members", data);
+        });
+
+        socket.on("update_conversation", (data) => {
+            const otherUser = data.other_user;
+            const socketIds = [];
+            otherUser.forEach((user) => {
+                const socketId = onlineUsers.get(user._id);
+                if (socketId) socketIds.push(socketId);
+            });
+
+            if (socketIds.length > 0) io.sockets.to(socketIds).emit("update_conversation", data);
         });
     });
 
