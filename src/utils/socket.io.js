@@ -25,7 +25,7 @@ const setupSocket = (io) => {
         UserService.updateUserStatus({
             userId: socket.userId,
             status: true
-        });
+        }).then(() => {});
 
         socket.emit("user_status", {
             userId: socket.userId,
@@ -145,15 +145,14 @@ const setupSocket = (io) => {
 
             if (socketIds.length > 0) io.sockets.to(socketIds).emit("create_conversation", data);
         });
-
         socket.on("update_conversation_members", (data) => {
-            console.log(data);
             const otherUser = data.status === "add-members" ? data.other_user : [...data.other_user, data.removedUser];
 
             const socketIds = [];
             otherUser.forEach((user) => {
                 const socketId = onlineUsers.get(user._id);
                 if (socketId) socketIds.push(socketId);
+                console.log(user._id, socketId);
             });
 
             if (socketIds.length > 0) io.sockets.to(socketIds).emit("update_conversation_members", data);
@@ -166,7 +165,7 @@ const setupSocket = (io) => {
                 const socketId = onlineUsers.get(user._id);
                 if (socketId) socketIds.push(socketId);
             });
-
+            console.log(socketIds);
             if (socketIds.length > 0) io.sockets.to(socketIds).emit("update_conversation", data);
         });
     });

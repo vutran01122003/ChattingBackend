@@ -28,6 +28,7 @@ class ConversationService {
             const response = {
                 conversation_id: conversation._id,
                 other_user: otherParticipants,
+                participants: conversation.participants,
                 last_message: conversation.last_message,
                 last_message_time: conversation.last_message_time,
                 conversation_type: conversation.conversation_type,
@@ -68,6 +69,7 @@ class ConversationService {
                 return {
                     conversation_id: conv._id,
                     other_user: otherUser,
+                    participants: conv.participants,
                     last_message: conv.last_message,
                     last_message_time: conv.last_message_time,
                     conversation_type: conv.conversation_type,
@@ -152,6 +154,7 @@ class ConversationService {
             return {
                 conversation_id: populatedConversation._id,
                 other_user: populatedConversation.participants.filter((person) => person._id.toString() !== id),
+                participants: populatedConversation.participants,
                 last_message: populatedConversation.last_message,
                 last_message_time: populatedConversation.last_message_time,
                 conversation_type: populatedConversation.conversation_type,
@@ -185,16 +188,17 @@ class ConversationService {
         subAdminStatus,
         allowSendMessage,
         allowChangeGroupInfo,
-        isActive
+        isActive,
+        base64
     }) => {
         try {
             let group_avatar = null;
 
-            if (file) {
-                const buffer = file?.buffer;
+            if (file || base64) {
+                const buffer = base64 ? Buffer.from(base64, "base64") : file?.buffer;
                 if (!buffer) throw new BadRequestError("Invalid image data");
 
-                group_avatar = await updateAvatar(file.originalname, buffer);
+                group_avatar = await updateAvatar(conversationId, buffer);
                 if (!group_avatar) throw new BadRequestError("Cannot create avatar");
             }
 
@@ -234,6 +238,7 @@ class ConversationService {
             const response = {
                 conversation_id: updatedConversation._id,
                 other_user: updatedConversation.participants.filter((person) => person._id.toString() !== id),
+                participants: updatedConversation.participants,
                 last_message: updatedConversation.last_message,
                 last_message_time: updatedConversation.last_message_time,
                 conversation_type: updatedConversation.conversation_type,
@@ -322,6 +327,7 @@ class ConversationService {
                 const response = {
                     conversation_id: conversation._id,
                     other_user: otherParticipants,
+                    participants: conversation.participants,
                     last_message: conversation.last_message,
                     last_message_time: conversation.last_message_time,
                     conversation_type: conversation.conversation_type,
