@@ -184,7 +184,7 @@ const getUserBySearch = async ({ search, userId, forGroup }) => {
     const messagedUsers = messages.map((msg) => msg.sender.toString()).filter((id) => id !== userId);
 
     const searchUserIds = [...new Set([...friends, ...messagedUsers])];
-
+   
     const foundUsers = await userModel
         .find({
             _id: { $in: searchUserIds },
