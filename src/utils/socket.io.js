@@ -4,6 +4,11 @@ const UserService = require("../services/user.service");
 const setupSocket = (io) => {
     io.use(async (socket, next) => {
         const { userId, token } = socket.handshake.auth;
+        console.log({
+            userId,
+            token
+        });
+
         try {
             const result = await authenticationForSocket(userId, token);
             if (!userId || !token) next(new Error(result.message));
@@ -167,6 +172,46 @@ const setupSocket = (io) => {
             });
             console.log(socketIds);
             if (socketIds.length > 0) io.sockets.to(socketIds).emit("update_conversation", data);
+        });
+
+        socket.on("offer", (data) => {
+            const { userIdList, offer } = data;
+            const socketIds = [];
+            userIdList.forEach((userId) => {
+                const socketId = onlineUsers.get(userId);
+                if (socketId) socketIds.push(socketId);
+            });
+            if (socketIds.length > 0) io.sockets.to(socketIds).emit("offer", offer);
+        });
+
+        socket.on("answer", (data) => {
+            const { userIdList, answer } = data;
+            const socketIds = [];
+            userIdList.forEach((userId) => {
+                const socketId = onlineUsers.get(userId);
+                if (socketId) socketIds.push(socketId);
+            });
+            if (socketIds.length > 0) io.sockets.to(socketIds).emit("answer", answer);
+        });
+
+        socket.on("ice-candidate", (data) => {
+            const { userIdList, candidate } = data;
+            const socketIds = [];
+            userIdList.forEach((userId) => {
+                const socketId = onlineUsers.get(userId);
+                if (socketId) socketIds.push(socketId);
+            });
+
+            if (socketIds.length > 0) io.sockets.to(socketIds).emit("ice-candidate", candidate);
+        });
+
+        socket.on("call_user_mobile", (data) => {
+            socket.to(onlineUsers.get(data.receiver._id)).emit("answer_user_mobile", data);
+        });
+
+        socket.on("hang-up", (data) => {
+            const { otherUserId } = data;
+            io.to(onlineUsers.get(otherUserId)).emit("hang-up", data);
         });
     });
 
