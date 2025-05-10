@@ -218,6 +218,78 @@ const setupSocket = (io) => {
             const { userId } = data;
             io.to(onlineUsers.get(userId)).emit("change_password");
         });
+
+        socket.on("send_friend_request", (data) => {
+            const { fromUserId, toUserId, message } = data;
+            const receiverSocketId = onlineUsers.get(toUserId);
+            console.log(`Gửi yêu cầu kết bạn từ ${fromUserId} đến ${toUserId}, receiverSocketId: ${receiverSocketId}`);
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("receive_friend_request", {
+                    fromUserId,
+                    toUserId,
+                    message: message || "Bạn có một lời mời kết bạn mới!"
+                });
+                console.log(`Đã phát receive_friend_request đến ${toUserId}`);
+            } else {
+                console.warn(`Không tìm thấy socket cho người nhận ${toUserId}`);
+            }
+        });
+
+        socket.on("friend_request_accepted", (data) => {
+            const { fromUserId, toUserId } = data;
+
+            const receiverSocketId = onlineUsers.get(toUserId);
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("friend_request_accepted", {
+                    fromUserId
+                });
+            }
+        });
+
+        socket.on("friend_request_accept_success", (data) => {
+            const { toUserId } = data;
+
+            const socketId = onlineUsers.get(toUserId);
+            if (socketId) {
+                io.to(socketId).emit("friend_request_accept_success", {
+                    toUserId
+                });
+            }
+        });
+
+        socket.on("friend_request_declined", (data) => {
+            const { fromUserId, toUserId } = data;
+
+            const senderSocketId = onlineUsers.get(toUserId);
+            if (senderSocketId) {
+                io.to(senderSocketId).emit("friend_request_declined", {
+                    fromUserId
+                });
+            }
+        });
+
+        socket.on("friend_request_canceled", (data) => {
+            const { fromUserId, toUserId } = data;
+
+            const receiverSocketId = onlineUsers.get(toUserId);
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("friend_request_canceled", {
+                    fromUserId
+                });
+            }
+        });
+
+        socket.on("user_unfriended", (data) => {
+            const { fromUserId, toUserId } = data;
+
+            const socketId = onlineUsers.get(toUserId);
+            if (socketId) {
+                io.to(socketId).emit("user_unfriended", {
+                    fromUserId,
+                    toUserId
+                });
+            }
+        });
     });
 
     return io;
