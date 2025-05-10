@@ -8,48 +8,72 @@ const ConversationSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: "User",
-                required: true,
-            },
+                required: true
+            }
         ],
         last_message: {
             type: Schema.Types.ObjectId,
-            ref: "Message",
+            ref: "Message"
         },
         last_message_time: {
             type: Date,
-            default: Date.now,
+            default: Date.now
         },
         conversation_type: {
             type: String,
-            enum: ["friend", "stranger"],
-            default: "stranger",
+            enum: ["friend", "stranger", "group"],
+            default: "stranger"
         },
         read_by: [
             {
                 user: {
                     type: Schema.Types.ObjectId,
-                    ref: "User",
+                    ref: "User"
                 },
                 read_at: {
                     type: Date,
-                    default: Date.now,
-                },
-            },
+                    default: Date.now
+                }
+            }
         ],
         is_group: {
             type: Boolean,
-            default: false,
+            default: false
+        },
+        group_name: {
+            type: String
+        },
+        group_avatar: {
+            type: String
         },
         admin: [
             {
                 type: Schema.Types.ObjectId,
-                ref: "User",
-            },
+                ref: "User"
+            }
         ],
+        sub_admin: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ],
+        allow_send_message: {
+            type: Boolean,
+            default: true
+        },
+        allow_change_group_info: {
+            type: Boolean,
+            default: true
+        },
+        is_active: {
+            type: Boolean,
+            default: true
+        }
     },
     {
         timestamps: true,
-        collection: COLLECTION_NAME,
+        collection: COLLECTION_NAME
     }
 );
 

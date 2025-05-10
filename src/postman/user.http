@@ -36,3 +36,14 @@ authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiY
     "password": "john123",
     "newPassword": "john1234"
 }
+
+
+### update user status
+POST {{url_dev}}/user/update-status
+Content-Type: application/json
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTI0NTcwNywiZXhwIjoxNzQ1NDE4NTA3fQ.6VXsKLWtChKpv7xMfyVK8CnP5EbkarbMlP7jcDzx-I8
+
+{
+    "status": false
+}

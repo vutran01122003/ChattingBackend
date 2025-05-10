@@ -3,15 +3,14 @@ const router = express.Router();
 const ConversationController = require("../../controllers/conversation.controller");
 const { authentication } = require("../../auth/authUtils");
 const asyncHandler = require("../../helpers/asyncHandler");
+const upload = require("multer")();
 
 router.use(authentication);
 
-router.get(
-    "/conversations",
-    asyncHandler(ConversationController.getUserConversations)
-);
-router.post(
-    "/conversations",
-    asyncHandler(ConversationController.createOrGetConversation)
-);
+router.get("/conversations/:conversation_id", asyncHandler(ConversationController.getUserConversation));
+router.get("/conversations", asyncHandler(ConversationController.getAllUserConversations));
+router.post("/conversations", upload.single("file"), asyncHandler(ConversationController.createConversation));
+router.patch("/conversations", upload.single("file"), asyncHandler(ConversationController.updateConversation));
+router.post("/conversations/members", asyncHandler(ConversationController.updateMembersToConversation));
+
 module.exports = router;

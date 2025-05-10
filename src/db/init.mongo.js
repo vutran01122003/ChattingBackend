@@ -6,17 +6,16 @@ const {
 } = require("../configs/config.mongodb");
 const connectString = `mongodb+srv://${user}:${password}@chattingapp.v5q87dk.mongodb.net/${name}?retryWrites=true&w=majority`;
 
-console.log({ user, password, name });
 class Database {
     constructor() {
         this.connect();
     }
 
     connect(type = "mongodb") {
-        if (true) {
-            mongoose.set("debug", true);
-            mongoose.set("debug", { color: true });
-        }
+        // if (true) {
+        //     mongoose.set("debug", true);
+        //     mongoose.set("debug", { color: true });
+        // }
         mongoose
             .connect(connectString, {
                 maxPoolSize: 50

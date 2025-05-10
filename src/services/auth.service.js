@@ -53,7 +53,10 @@ class AuthenticationService {
             throw new BadRequestError("Error key store");
         }
         return {
-            user: getInfoData({ fields: ["full_name", "phone", "_id"], object: newAccount }),
+            user: getInfoData({
+                fields: ["full_name", "phone", "_id"],
+                object: newAccount
+            }),
             tokens
         };
     };
@@ -64,7 +67,10 @@ class AuthenticationService {
             throw new ForbiddenError("Something went wrong, please try again!");
         }
         if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError("Invalid refresh token");
-        const foundUser = await findUserByPhoneNumber({ phone, select: ["phone", "full_name"] });
+        const foundUser = await findUserByPhoneNumber({
+            phone,
+            select: ["phone", "full_name"]
+        });
         if (!foundUser) throw new AuthFailureError("Something went wrong !");
 
         const tokens = await createTokenPair({ userId, phone, tokenVersion }, keyStore.publicKey, keyStore.privateKey);
@@ -97,10 +103,12 @@ class AuthenticationService {
                 "_id",
                 "date_of_birth",
                 "avatar_url",
-                "gender"
+                "gender",
+                "token_version"
             ]
         });
         if (!foundUser) throw new BadRequestError("User not found!");
+        console.log(password);
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) throw new AuthFailureError("Unauthorized!");
         const keyStore = await KeyTokenService.findByUserId(foundUser._id);
@@ -130,7 +138,38 @@ class AuthenticationService {
                 tokens
             };
         }
-
+        const updateAt = new Date(keyStore.updatedAt);
+        const now = new Date();
+        const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        if (updateAt < sevenDaysAgo) {
+            const { publicKey, privateKey } = genSecretKey();
+            const tokens = await createTokenPair(
+                {
+                    userId: foundUser._id,
+                    phone: foundUser.phone,
+                    tokenVersion: foundUser.token_version
+                },
+                publicKey,
+                privateKey
+            );
+            await KeyTokenService.createKeyToken({
+                userId: foundUser._id,
+                publicKey,
+                privateKey,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken
+            });
+            return {
+                user: getInfoData({
+                    fields: ["full_name", "phone", "is_has_password", "_id", "date_of_birth", "avatar_url", "gender"],
+                    object: foundUser
+                }),
+                tokens
+            };
+        } else if (keyStore && updateAt < twoDaysAgo) {
+            return new AuthFailureError("Token expired!");
+        }
         return {
             user: getInfoData({
                 fields: ["full_name", "phone", "is_has_password", "_id", "date_of_birth", "avatar_url", "gender"],

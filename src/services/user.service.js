@@ -1,4 +1,4 @@
-const { BadRequestError } = require("../core/error.response");
+const { BadRequestError, NotFoundError } = require("../core/error.response");
 const {
     updateInfo,
     updatePassword,
@@ -7,16 +7,28 @@ const {
     resetPassword,
     checkPassword,
     getAllUser,
-    getUserBySearch
+    getUserBySearch,
+    updateUserStatus,
+    declineFriendRequest,
+    acceptFriendRequest,
+    sendFriendRequest,
+    cancelFriendRequest,
+    unfriend,
+    checkFriendShip,
+    checkSendFriendRequest,
+    checkReceiveFriendRequest,
+    getSendFriendRequest,
+    getReceiveFriendRequest,
+    getFriendList
 } = require("../models/repositories/user.repo");
 const { createAndUploadAvatar, updateAvatar } = require("../helpers/createAvatar");
 const { sendSingleMessage } = require("../utils");
 const { Buffer } = require("buffer");
 const { generateOTPToken, verifyOTP } = require("../auth/genOTP");
-const { find } = require("../models/user.model");
+
+const { console } = require("inspector");
 class UserService {
     static updateInfo = async ({ phone, fullName, dateOfBirth, gender }) => {
-        console.log(dateOfBirth);
         const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
         if (age < 14) throw new BadRequestError("Age must be greater than 14");
         const avatarUrl = await createAndUploadAvatar(fullName);
@@ -26,8 +38,9 @@ class UserService {
         return updateUser;
     };
     static editProfile = async ({ phone, fullName, dateOfBirth, gender, base64, file }) => {
+        console.log(dateOfBirth);
         const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
-        // if (age < 14) throw new BadRequestError("Age must be greater than 14");
+        if (age < 14) throw new BadRequestError("Age must be greater than 14");
 
         let avatarUrl = null;
 
@@ -89,7 +102,6 @@ class UserService {
         };
     };
     static resetPassword = async ({ phone, newPassword }) => {
-        console.log({ phone, newPassword });
         const { modifiedCount } = await resetPassword({ phone, newPassword });
         if (modifiedCount === 0) {
             throw new BadRequestError("Cannot reset password");
@@ -117,10 +129,78 @@ class UserService {
         if (!foundUser) throw new BadRequestError("Cannot find user");
         return foundUser;
     };
-    static getUserBySearch = async ({ search }) => {
-        const foundUser = await getUserBySearch({ search });
+    static getUserBySearch = async ({ search, userId, forGroup }) => {
+        const foundUser = await getUserBySearch({ search, userId, forGroup });
         if (!foundUser) throw new BadRequestError("Cannot find user");
         return foundUser;
+    };
+
+    static updateUserStatus = async ({ userId, status = false, last_seen = new Date() }) => {
+        try {
+            const result = await updateUserStatus(userId, status, last_seen);
+
+            if (!result) throw new BadRequestError("Cannot update user status");
+            return result;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    static sendFriendRequest = async ({ phone, friendId }) => {
+        const result = await sendFriendRequest({ phone, friendId });
+        if (!result) throw new BadRequestError("Cannot send friend request");
+        return result;
+    };
+    static cancelFriendRequest = async ({ senderId, receiverId }) => {
+        const result = await cancelFriendRequest({ senderId, receiverId });
+        if (!result) throw new BadRequestError("Cannot cancel friend request");
+        return result;
+    };
+    static declineFriendRequest = async ({ receiverId, senderId }) => {
+        const result = await declineFriendRequest({ receiverId, senderId });
+        if (!result) throw new BadRequestError("Cannot decline friend request");
+        return result;
+    };
+    static acceptFriendRequest = async ({ receiverId, senderId }) => {
+        const result = await acceptFriendRequest({ receiverId, senderId });
+        console.log(result);
+        if (!result) throw new BadRequestError("Cannot add friend");
+        return result;
+    };
+    static unfriend = async ({ phone, friendId }) => {
+        const result = await unfriend({ phone, friendId });
+        if (!result) throw new BadRequestError("Cannot unfriend");
+        return result;
+    };
+    static checkFriendShip = async ({ phone, friendId }) => {
+        const result = await checkFriendShip({ phone, friendId });
+        if (!result) throw new BadRequestError("Cannot check friendship");
+        return result;
+    };
+    static checkSendFriendRequest = async ({ phone, friendId }) => {
+        const result = await checkSendFriendRequest({ phone, friendId });
+        if (!result) throw new BadRequestError("Cannot check send friend request");
+        return result;
+    };
+    static checkReceiveFriendRequest = async ({ phone, friendId }) => {
+        const result = await checkReceiveFriendRequest({ phone, friendId });
+        if (!result) throw new BadRequestError("Cannot check receive friend request");
+        return result;
+    };
+    static getSendFriendRequest = async ({ phone }) => {
+        const result = await getSendFriendRequest({ phone });
+        if (!result) throw new BadRequestError("Cannot get send friend request");
+        return result;
+    };
+    static getReceiveFriendRequest = async ({ phone }) => {
+        const result = await getReceiveFriendRequest({ phone });
+        if (!result) throw new BadRequestError("Cannot get receive friend request");
+        return result;
+    };
+    static getFriendList = async ({ phone }) => {
+        const result = await getFriendList({ phone });
+        if (!result) throw new BadRequestError("Cannot get friend list");
+        return result;
     };
 }
 

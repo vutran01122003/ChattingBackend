@@ -1,17 +1,39 @@
 @url_dev=http://localhost:3055/v1/api
 
+### Get Conversation 
+GET  {{url_dev}}/conversations/67fc8f626ba178060c6b91e7
+Content-Type: application/json
+x-client-id:6801ce58f92ca12177596d90
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5MmNhMTIxNzc1OTZkOTAiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTQyNjg5NSwiZXhwIjoxNzQ1NTk5Njk1fQ.3RjeJfHM6xBEh1VAN4D0f-XvXjxys-Vr_lk3Yg-paIA
+
 ### Get User Conversations
 GET {{url_dev}}/conversations
 Content-Type: application/json
-x-client-id:67fc8f626ba178060c6b91e6
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjYsImlhdCI6MTc0NDgxNzc5NywiZXhwIjoxNzQ0OTkwNTk3fQ.SNQ6RSWxXU0sBJ65JDzk35ylqDd16qZ0Ak76iDrkIkM
+x-client-id:67ff6544b864082a861acd8e
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZmNjU0NGI4NjQwODJhODYxYWNkOGUiLCJwaG9uZSI6IjA1NTk0MjEzOTYiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTM0MDkxMCwiZXhwIjoxNzQ1NTEzNzEwfQ.83mi83Bo_XYOc5PAFx9U_iW4k-NDkoZpEUSvIfKnmOw
 
-### Create or Get Conversation
+### Create 1:1 Conversation 
 POST {{url_dev}}/conversations
 Content-Type: application/json
-x-client-id:67fc8f626ba178060c6b91e6
-authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZjOGY2MjZiYTE3ODA2MGM2YjkxZTYiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjYsImlhdCI6MTc0NDgxNzc5NywiZXhwIjoxNzQ0OTkwNTk3fQ.SNQ6RSWxXU0sBJ65JDzk35ylqDd16qZ0Ak76iDrkIkM
+x-client-id:6801ce58f92ca12177596d90
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5MmNhMTIxNzc1OTZkOTAiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTQyNjg5NSwiZXhwIjoxNzQ1NTk5Njk1fQ.3RjeJfHM6xBEh1VAN4D0f-XvXjxys-Vr_lk3Yg-paIA
 
 {
-    "otherUserId": "67ff6544b864082a861acd8e"
+    "otherUserId": [
+        "6801e7fda3f2d3b8ff971abe"
+    ]
+}
+
+### Create 1:n Conversation 
+POST {{url_dev}}/conversations
+Content-Type: application/json
+x-client-id:6801ce58f92ca12177596d90
+authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODAxY2U1OGY5MmNhMTIxNzc1OTZkOTAiLCJwaG9uZSI6IjA5NDI3MjAzMjkiLCJ0b2tlblZlcnNpb24iOjEsImlhdCI6MTc0NTQyNjg5NSwiZXhwIjoxNzQ1NTk5Njk1fQ.3RjeJfHM6xBEh1VAN4D0f-XvXjxys-Vr_lk3Yg-paIA
+
+{
+    "otherUserId": [
+        "67ff6544b864082a861acd8e",
+        "6801d7a04a8f46d111491edd"
+    ],
+    "groupName": "Tâm và Gia Huy"
 }

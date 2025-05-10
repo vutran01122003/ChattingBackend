@@ -50,7 +50,6 @@ const authentication = asyncHandler(async (req, res, next) => {
     if (!accessToken) throw new AuthFailureError("Invalid request");
     try {
         const decodedUser = jwt.verify(accessToken, keyStore.publicKey);
-        console.log("decodedUser::::", decodedUser);
         if (userId !== decodedUser.userId) throw new AuthFailureError("Invalid user");
         const foundUser = await findUserById({ userId });
         if (foundUser.token_version !== decodedUser.tokenVersion)
@@ -59,9 +58,44 @@ const authentication = asyncHandler(async (req, res, next) => {
         req.User = decodedUser;
         return next();
     } catch (error) {
-        throw error;
+        throw new AuthFailureError("Invalid token");
     }
 });
+
+const authenticationForSocket = async (userId, accessToken) => {
+    if (!userId)
+        return {
+            isValid: false,
+            error: "Invalid request"
+        };
+    const keyStore = await KeyTokenService.findByUserId(userId);
+
+    if (!keyStore)
+        return {
+            isValid: false,
+            error: "Key store not found"
+        };
+
+    if (!accessToken)
+        return {
+            isValid: false,
+            error: "Invalid request"
+        };
+    try {
+        const decodedUser = jwt.verify(accessToken, keyStore.publicKey);
+        if (userId !== decodedUser.userId)
+            return {
+                isValid: false,
+                error: "Invalid user"
+            };
+        const foundUser = await findUserById({ userId });
+        if (foundUser.token_version !== decodedUser.tokenVersion)
+            throw new ForbiddenError("Password changed! Please login again");
+        return { isValid: true, message: "Valid user" };
+    } catch (error) {
+        throw error;
+    }
+};
 
 const verifyJWT = async (token, keySecret) => {
     return await jwt.verify(token, keySecret);
@@ -70,5 +104,6 @@ const verifyJWT = async (token, keySecret) => {
 module.exports = {
     createTokenPair,
     authentication,
-    verifyJWT
+    verifyJWT,
+    authenticationForSocket
 };

@@ -1,7 +1,7 @@
+const { model, Schema, Types } = require('mongoose');
 
-const {model, Schema, Types} = require('mongoose');
-const DOCUMENT_NAME = 'User'
-const COLLECTION_NAME = 'users'
+const DOCUMENT_NAME = 'User';
+const COLLECTION_NAME = 'users';
 
 const UserSchema = new Schema({
     full_name: {
@@ -13,37 +13,51 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
-    password:{
+    password: {
         type: String,
         trim: true,
     },
-    avatar_url:{
+    avatar_url: {
         type: String,
         trim: true
     },
-    date_of_birth:{
+    date_of_birth: {
         type: Date
     },
-    gender:{
+    gender: {
         type: String,
-        enum:['male', 'female']
+        enum: ['male', 'female']
     },
-    friends:[
+    friends: [
         {
             type: Schema.Types.ObjectId,
             ref: DOCUMENT_NAME,
             default: []
         }
     ],
-    is_online:{
+    sentRequests: [  
+        {
+            type: Schema.Types.ObjectId, 
+            ref: DOCUMENT_NAME ,
+            default: []
+        }
+    ],
+    friendRequests: [ 
+        {
+            type: Schema.Types.ObjectId,
+            ref: DOCUMENT_NAME ,
+            default: []
+        }
+    ],
+    is_online: {
         type: Boolean,
         default: false
     },
-    is_has_password:{
+    is_has_password: {
         type: Boolean,
         default: false
     },
-    last_seen:{
+    last_seen: {
         type: Date,
         default: Date.now
     },
@@ -54,6 +68,6 @@ const UserSchema = new Schema({
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
-})
+});
 
 module.exports = model(DOCUMENT_NAME, UserSchema);

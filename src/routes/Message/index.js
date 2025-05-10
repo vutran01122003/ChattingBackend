@@ -28,4 +28,9 @@ router.put(
     "/messages/mark-as-read",
     asyncHandler(MessageController.markMessageAsRead)
 );
+router.post("/messages/reaction", asyncHandler(MessageController.addReaction));
+router.delete(
+    "/messages/reaction",
+    asyncHandler(MessageController.removeReaction)
+);
 module.exports = router;
