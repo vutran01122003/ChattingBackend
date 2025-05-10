@@ -213,6 +213,11 @@ const setupSocket = (io) => {
             const { otherUserId } = data;
             io.to(onlineUsers.get(otherUserId)).emit("hang-up", data);
         });
+
+        socket.on("change_password", (data) => {
+            const { userId } = data;
+            io.to(onlineUsers.get(userId)).emit("change_password");
+        });
     });
 
     return io;

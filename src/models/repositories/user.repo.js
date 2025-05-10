@@ -157,25 +157,16 @@ const getUserBySearch = async ({ search, userId, forGroup }) => {
 
     const currentUser = await userModel.findById(userId).lean();
     if (!currentUser) throw new NotFoundError("Người dùng không tồn tại.");
+    const friends = currentUser.friends || [];
 
     if (/^\d{8,15}$/.test(search)) {
-        const friends = currentUser.friends;
         const exactUser = await userModel.find({ phone: search }).lean();
-
-        console.log({
-            friends,
-            exactUser: exactUser[0]._id,
-            forGroup
-        });
-
         if (forGroup && !friends.find((friendId) => friendId.toString() === exactUser[0]._id.toString()))
             throw new NotFoundError("Không tìm thấy người dùng nào.");
 
         if (!exactUser || exactUser.length === 0) throw new NotFoundError("Không tìm thấy người dùng nào.");
         return exactUser;
     }
-
-    const friends = currentUser.friends || [];
 
     const messages = await Message.find({
         $or: [{ read_by: userId }, { sender: userId }]
@@ -184,7 +175,7 @@ const getUserBySearch = async ({ search, userId, forGroup }) => {
     const messagedUsers = messages.map((msg) => msg.sender.toString()).filter((id) => id !== userId);
 
     const searchUserIds = [...new Set([...friends, ...messagedUsers])];
-   
+
     const foundUsers = await userModel
         .find({
             _id: { $in: searchUserIds },
@@ -193,7 +184,11 @@ const getUserBySearch = async ({ search, userId, forGroup }) => {
         .lean();
 
     if (!foundUsers || foundUsers.length === 0) throw new NotFoundError("Không tìm thấy người phù hợp.");
-    return foundUsers;
+    return !forGroup
+        ? foundUsers
+        : foundUsers.filter((user) => {
+              if (friends.find((friendId) => friendId.toString() === user._id.toString())) return user;
+          });
 };
 
 const updateUserStatus = async (userId, status, last_seen) => {
